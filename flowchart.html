@@ -19,7 +19,6 @@
     </div>
 
     <script>
-        // Initialize mermaid in "secure" mode
         mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: 'neutral' });
 
         async function renderDynamicFlowchart() {
@@ -31,27 +30,32 @@
             document.getElementById('title').innerText = conceptName;
 
             try {
-                // 1. Fetch the actual data.json updated by n8n
                 const response = await fetch('data.json');
                 const data = await response.json();
-
-                // 2. Find the Tier 2 node that matches the concept name
                 const matchedNode = data.nodes.find(n => n.label === conceptName);
 
                 if (matchedNode && matchedNode.pathwaySteps) {
-                    // 3. Dynamic Parser: Mermaid requires --> arrows, not ->.
-                    // n8n output is 'A -> B -> C', which Mermaid syntax accepts as 'graph TD\nA-->B-->C'
-                    const cleanSteps = matchedNode.pathwaySteps.replaceAll(' -> ', '-->');
-                    const mermaidDefinition = `graph TD\n${cleanSteps}`;
                     
-                    // 4. Inject the definition and tell Mermaid to render it
+                    // FIX 3: Safe Parsing. We break the string apart and wrap each step in quotes 
+                    // so Mermaid doesn't crash on spaces or + symbols.
+                    const steps = matchedNode.pathwaySteps.split(' -> ');
+                    let mermaidDefinition = "graph TD\n";
+                    
+                    for (let i = 0; i < steps.length - 1; i++) {
+                        // Creates format: node1["Text"] --> node2["Text"]
+                        mermaidDefinition += `    step${i}["${steps[i]}"] --> step${i+1}["${steps[i+1]}"]\n`;
+                    }
+                    
                     container.innerHTML = mermaidDefinition;
-                    await mermaid.run(); 
+                    
+                    // Tell mermaid to render our newly injected code
+                    container.removeAttribute('data-processed');
+                    await mermaid.run({ nodes: [container] }); 
                 } else {
-                    throw new Error(`Pathway data not found for "${conceptName}". Ensure Gemini generated 'pathwaySteps' for this Tier 2 node.`);
+                    throw new Error(`Pathway data not found for "${conceptName}".`);
                 }
             } catch (error) {
-                console.error('Mermaid rendering error:', error);
+                console.error('Mermaid error:', error);
                 errorPanel.innerText = error.message;
                 errorPanel.style.display = 'block';
                 container.style.display = 'none';
