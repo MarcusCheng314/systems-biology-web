@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pathway Flowchart</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        #graph-container { width: 100%; max-width: 800px; }
+    </script>
+</head>
+<body>
+    <h1 id="title">Pathway Analysis</h1>
+    <div id="graph-container" class="mermaid">
+        %% The chart will be injected here
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+
+        // Get the node name from the URL (e.g., flowchart.html?concept=MuscleContraction)
+        const urlParams = new URLSearchParams(window.location.search);
+        const concept = urlParams.get('concept');
+        document.getElementById('title').innerText = "Pathway: " + concept;
+
+        // For now, we manually define a few key pathways. 
+        // Later, we can have Gemini generate these automatically!
+        const pathways = {
+            "Sliding Filament Theory": `graph TD
+                A[Ca2+ binds to Troponin] --> B[Tropomyosin shifts]
+                B --> C[Myosin binding sites exposed]
+                C --> D[Myosin forms Cross-bridge]
+                D --> E[Power Stroke pulls Actin]
+                E --> F[ATP binds to release Myosin]`,
+            "Excitation-Contraction Coupling": `graph TD
+                A[Action Potential] --> B[T-Tubule Depolarization]
+                B --> C[DHP Receptor Change]
+                C --> D[RyR Channel Opens]
+                D --> E[Ca2+ Efflux into Sarcoplasm]`
+        };
+
+        const container = document.getElementById('graph-container');
+        container.innerHTML = pathways[concept] || "graph TD\\n A[Notes available soon for this pathway]";
+    </script>
+</body>
+</html>
