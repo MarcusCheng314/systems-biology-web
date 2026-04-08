@@ -2,240 +2,251 @@
   "nodes": [
     {
       "id": 1,
-      "label": "B3.3 Muscle and Motility",
-      "description": "The study of muscle structure, function, and the mechanisms of movement, including the detailed process of muscle contraction.",
+      "label": "C1.2 Cell Respiration",
+      "description": "Cell respiration is the controlled release of energy from organic compounds to produce ATP. This overarching topic is divided into several major interconnected concepts that occur across different cellular compartments.",
       "tier": 1,
-      "orgLevel": "Organisms",
-      "isHL": true,
-      "hasPathway": false
+      "orgLevel": "Cells",
+      "isHL": false
     },
     {
       "id": 2,
-      "label": "Excitation-Contraction Coupling",
-      "description": "The physiological process linking the electrical excitation of the muscle cell membrane (sarcolemma) to the mechanical contraction of the muscle fiber.",
+      "label": "Glycolysis",
+      "description": "Glycolysis is an anaerobic process occurring in the cytoplasm. It breaks down a 6-carbon glucose molecule into two 3-carbon pyruvate molecules.",
       "tier": 2,
       "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": true,
-      "pathwaySteps": "Action Potential -> T-tubule Depolarization -> DHP Receptor Activation -> RyR Channel Opens -> Ca2+ Efflux into Sarcoplasm"
+      "isHL": false
     },
     {
       "id": 3,
-      "label": "Sliding Filament Theory",
-      "description": "The mechanism by which muscle contraction occurs, involving the sliding of actin filaments past myosin filaments, resulting in sarcomere shortening.",
-      "tier": 2,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": true,
-      "pathwaySteps": "Ca2+ binds to Troponin -> Tropomyosin shifts -> Myosin-binding sites exposed -> Myosin heads form cross-bridges -> Power Stroke -> ATP binds to release Myosin"
+      "label": "Phosphorylation (Glycolysis)",
+      "description": "First, in phosphorylation, hexokinase uses two ATP molecules to add phosphate groups to glucose, making it unstable.",
+      "tier": 3,
+      "orgLevel": "Molecules",
+      "isHL": false
     },
     {
       "id": 4,
-      "label": "Neuromuscular Junction",
-      "description": "The specialized synapse between a motor neuron and a skeletal muscle fiber, where nerve impulses are transmitted to trigger muscle contraction.",
+      "label": "Lysis (Glycolysis)",
+      "description": "During lysis, this hexose bisphosphate splits into two triose phosphate molecules.",
       "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
+      "orgLevel": "Molecules",
+      "isHL": false
     },
     {
       "id": 5,
-      "label": "Action Potential",
-      "description": "An electrical signal (depolarization) that travels along the sarcolemma and T-tubules, initiating the excitation-contraction coupling process.",
+      "label": "Oxidation (Glycolysis)",
+      "description": "In the oxidation phase, triose phosphate loses hydrogen, reducing NAD+ to NADH.",
       "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
+      "orgLevel": "Molecules",
+      "isHL": false
     },
     {
       "id": 6,
-      "label": "Acetylcholine",
-      "description": "A neurotransmitter released by motor neurons at the neuromuscular junction; its binding to sarcolemmal receptors initiates depolarization.",
+      "label": "ATP Formation (Glycolysis)",
+      "description": "Finally, enzymes transfer phosphate groups directly to ADP, generating a net yield of two ATP via substrate-level phosphorylation.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": false
     },
     {
       "id": 7,
-      "label": "Sarcolemma",
-      "description": "The plasma membrane of a muscle fiber; it propagates the action potential into the muscle cell and contains receptors for acetylcholine.",
-      "tier": 3,
+      "label": "The Link Reaction",
+      "description": "If oxygen is present, pyruvate enters the mitochondrial matrix via transport proteins. Here, it undergoes oxidative decarboxylation.",
+      "tier": 2,
       "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": false
     },
     {
       "id": 8,
-      "label": "Transverse Tubules (T-tubules)",
-      "description": "Invaginations of the sarcolemma that extend deep into the muscle fiber, allowing rapid propagation of the action potential throughout the cell.",
+      "label": "Pyruvate Transport",
+      "description": "Pyruvate enters the mitochondrial matrix via transport proteins.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": false
     },
     {
       "id": 9,
-      "label": "Dihydropyridine (DHP) Receptors",
-      "description": "Voltage-sensitive receptors located on the T-tubule membrane; they undergo a conformational change upon depolarization and are mechanically coupled to ryanodine receptors.",
+      "label": "Oxidative Decarboxylation (Link Reaction)",
+      "description": "Pyruvate loses a carbon atom as carbon dioxide and is simultaneously oxidized, reducing NAD+ to NADH.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": false
     },
     {
       "id": 10,
-      "label": "Ryanodine Receptors (RyR)",
-      "description": "Calcium release channels located on the sarcoplasmic reticulum membrane; mechanically activated by DHP receptors, allowing a massive efflux of calcium ions into the sarcoplasm.",
+      "label": "Acetyl CoA Formation",
+      "description": "The remaining 2-carbon acetyl group binds to Coenzyme A, forming Acetyl CoA.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": false
     },
     {
       "id": 11,
-      "label": "Sarcoplasmic Reticulum (SR)",
-      "description": "A specialized endoplasmic reticulum in muscle cells that stores and releases calcium ions, which are essential for muscle contraction.",
-      "tier": 3,
+      "label": "The Krebs Cycle",
+      "description": "Located in the mitochondrial matrix, the Krebs Cycle is a cyclical mechanism of oxidation.",
+      "tier": 2,
       "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 12,
-      "label": "Calcium Ions (Ca2+)",
-      "description": "Key signaling molecules released from the SR into the sarcoplasm; they bind to troponin, initiating the molecular events of the sliding filament theory.",
+      "label": "Acetyl CoA Entry (Krebs Cycle)",
+      "description": "Acetyl CoA delivers its 2-carbon acetyl group to the cycle.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 13,
-      "label": "Sarcoplasm",
-      "description": "The cytoplasm of a muscle fiber, where calcium ions are released and muscle contraction occurs.",
+      "label": "Citrate Formation",
+      "description": "The acetyl group from Acetyl CoA binds with 4C Oxaloacetate, forming 6C Citrate.",
       "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
+      "orgLevel": "Molecules",
+      "isHL": true
     },
     {
       "id": 14,
-      "label": "Troponin",
-      "description": "A protein complex on the actin filament that binds calcium ions, leading to a conformational change that shifts tropomyosin.",
+      "label": "1st Oxidative Decarboxylation (Krebs)",
+      "description": "Citrate undergoes oxidative decarboxylation, releasing carbon dioxide and leading to a 5C molecule.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 15,
-      "label": "Tropomyosin",
-      "description": "A filamentous protein that winds around actin filaments and, in a relaxed muscle, covers the myosin-binding sites, preventing myosin attachment.",
+      "label": "2nd Oxidative Decarboxylation (Krebs)",
+      "description": "Further oxidative decarboxylation occurs, releasing carbon dioxide and resulting in a 4C molecule.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 16,
-      "label": "Actin Filaments",
-      "description": "Thin protein filaments in the sarcomere that contain myosin-binding sites; they are pulled by myosin during muscle contraction.",
+      "label": "Regeneration of Oxaloacetate",
+      "description": "The 4C molecule is regenerated back into Oxaloacetate, completing the cycle.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 17,
-      "label": "Myosin-binding Sites",
-      "description": "Specific regions on the actin filaments where myosin heads attach to form cross-bridges.",
+      "label": "Decarboxylase Enzymes (Krebs)",
+      "description": "Throughout the Krebs Cycle, decarboxylase enzymes remove carbon dioxide.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 18,
-      "label": "Myosin Heads",
-      "description": "Globular heads of the myosin protein that bind to actin, hydrolyze ATP, and perform the power stroke to pull actin filaments.",
+      "label": "Dehydrogenase Enzymes (Krebs)",
+      "description": "Dehydrogenase enzymes reduce both NAD+ and FAD into NADH and FADH2 during the Krebs Cycle.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 19,
-      "label": "ATP Hydrolysis",
-      "description": "The breakdown of ATP into ADP and inorganic phosphate, releasing energy that energizes myosin heads for cross-bridge formation.",
+      "label": "ATP Production (Krebs Cycle)",
+      "description": "A small amount of ATP is also produced via substrate-level phosphorylation within the Krebs Cycle.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 20,
-      "label": "Cross-bridges",
-      "description": "The connections formed when energized myosin heads bind to the myosin-binding sites on actin filaments.",
-      "tier": 3,
-      "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "label": "The Electron Transport Chain",
+      "description": "The ETC is a series of trans-membrane protein complexes embedded in the inner mitochondrial membrane (cristae).",
+      "tier": 2,
+      "orgLevel": "Cells",
+      "isHL": true
     },
     {
       "id": 21,
-      "label": "Power Stroke",
-      "description": "The conformational change in the myosin head that pulls the actin filament towards the M-line, shortening the sarcomere.",
+      "label": "Electron Delivery (ETC)",
+      "description": "NADH and FADH2 deliver high-energy electrons to the protein complexes of the ETC.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 22,
-      "label": "M-line",
-      "description": "The central line of the sarcomere, representing the anchoring point for myosin filaments; actin filaments are pulled towards it during contraction.",
+      "label": "Proton Pumping (ETC)",
+      "description": "As electrons are passed down the chain, they lose energy. This energy drives proton pumping, moving hydrogen ions from the matrix into the narrow intermembrane space, building a massive concentration gradient.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
     },
     {
       "id": 23,
-      "label": "Sarcomere",
-      "description": "The basic contractile unit of striated muscle, extending from one Z-disc to the next, composed of overlapping actin and myosin filaments.",
+      "label": "Oxygen as Final Electron Acceptor",
+      "description": "At the end of the chain, molecular oxygen acts as the final electron acceptor, binding with electrons and free protons to form water, preventing the chain from backing up.",
+      "tier": 3,
+      "orgLevel": "Molecules",
+      "isHL": true
+    },
+    {
+      "id": 24,
+      "label": "Chemiosmosis",
+      "description": "Chemiosmosis is the mechanism that couples the proton gradient to ATP synthesis.",
+      "tier": 2,
+      "orgLevel": "Cells",
+      "isHL": true
+    },
+    {
+      "id": 25,
+      "label": "Proton Motive Force",
+      "description": "The concentration gradient of hydrogen ions (protons) across the inner mitochondrial membrane builds, creating a proton motive force.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
+      "isHL": true
+    },
+    {
+      "id": 26,
+      "label": "ATP Synthase",
+      "description": "Because the inner membrane is impermeable to protons, they must diffuse back into the matrix through a specialized enzyme called ATP Synthase.",
+      "tier": 3,
+      "orgLevel": "Molecules",
+      "isHL": true
+    },
+    {
+      "id": 27,
+      "label": "ATP Synthesis (Chemiosmosis)",
+      "description": "The flow of protons through ATP Synthase causes its rotor subunit to turn, leading to a conformational change in the catalytic knob, where ADP binds with inorganic phosphate, resulting in massive ATP production.",
+      "tier": 3,
+      "orgLevel": "Molecules",
+      "isHL": true
     }
   ],
   "edges": [
     { "id": "e1", "from": 1, "to": 2 },
-    { "id": "e2", "from": 1, "to": 3 },
-    { "id": "e3", "from": 2, "to": 4 },
-    { "id": "e4", "from": 4, "to": 5 },
-    { "id": "e5", "from": 4, "to": 6 },
-    { "id": "e6", "from": 6, "to": 7 },
-    { "id": "e7", "from": 7, "to": 8 },
-    { "id": "e8", "from": 8, "to": 9 },
-    { "id": "e9", "from": 9, "to": 10 },
-    { "id": "e10", "from": 10, "to": 11 },
-    { "id": "e11", "from": 10, "to": 12 },
-    { "id": "e12", "from": 11, "to": 12 },
-    { "id": "e13", "from": 12, "to": 13 },
-    { "id": "e14", "from": 12, "to": 3 },
-    { "id": "e15", "from": 12, "to": 14 },
+    { "id": "e2", "from": 1, "to": 7 },
+    { "id": "e3", "from": 1, "to": 11 },
+    { "id": "e4", "from": 1, "to": 20 },
+    { "id": "e5", "from": 1, "to": 24 },
+    { "id": "e6", "from": 2, "to": 3 },
+    { "id": "e7", "from": 3, "to": 4 },
+    { "id": "e8", "from": 4, "to": 5 },
+    { "id": "e9", "from": 5, "to": 6 },
+    { "id": "e10", "from": 7, "to": 8 },
+    { "id": "e11", "from": 8, "to": 9 },
+    { "id": "e12", "from": 9, "to": 10 },
+    { "id": "e13", "from": 11, "to": 12 },
+    { "id": "e14", "from": 12, "to": 13 },
+    { "id": "e15", "from": 13, "to": 14 },
     { "id": "e16", "from": 14, "to": 15 },
-    { "id": "e17", "from": 15, "to": 17 },
-    { "id": "e18", "from": 16, "to": 17 },
-    { "id": "e19", "from": 18, "to": 19 },
-    { "id": "e20", "from": 18, "to": 17 },
-    { "id": "e21", "from": 18, "to": 20 },
-    { "id": "e22", "from": 20, "to": 21 },
-    { "id": "e23", "from": 21, "to": 16 },
-    { "id": "e24", "from": 21, "to": 22 },
-    { "id": "e25", "from": 16, "to": 23 },
-    { "id": "e26", "from": 22, "to": 23 }
+    { "id": "e17", "from": 15, "to": 16 },
+    { "id": "e18", "from": 11, "to": 17 },
+    { "id": "e19", "from": 11, "to": 18 },
+    { "id": "e20", "from": 11, "to": 19 },
+    { "id": "e21", "from": 20, "to": 21 },
+    { "id": "e22", "from": 21, "to": 22 },
+    { "id": "e23", "from": 22, "to": 23 },
+    { "id": "e24", "from": 24, "to": 25 },
+    { "id": "e25", "from": 25, "to": 26 },
+    { "id": "e26", "from": 26, "to": 27 },
+    { "id": "e27", "from": 2, "to": 7 },
+    { "id": "e28", "from": 7, "to": 11 },
+    { "id": "e29", "from": 11, "to": 20 },
+    { "id": "e30", "from": 20, "to": 24 }
   ]
 }
