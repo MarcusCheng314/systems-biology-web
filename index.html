@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Systems Web: IB Biology</title>
+    <title>IB Biology Systems Web</title>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; background: #f8f9fa; overflow: hidden; }
@@ -22,7 +22,6 @@
         #biology-network { width: 100%; height: 100%; }
         #flowchart-frame { width: 100%; height: 100%; border: none; }
 
-        /* The Info Panel Fixes */
         #info-panel {
             position: absolute; top: 20px; right: -400px; width: 320px;
             background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
@@ -32,11 +31,7 @@
         #info-panel.active { right: 20px; }
         #info-title { margin-top: 5px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; font-size: 1.2rem; }
         
-        /* Close Button Styling */
-        .close-btn { 
-            position: absolute; top: 12px; right: 15px; cursor: pointer; 
-            color: #bdc3c7; font-size: 22px; transition: color 0.2s;
-        }
+        .close-btn { position: absolute; top: 12px; right: 15px; cursor: pointer; color: #bdc3c7; font-size: 22px; transition: color 0.2s; }
         .close-btn:hover { color: #e74c3c; }
         
         #flowchart-btn { 
@@ -62,7 +57,7 @@
             <input type="checkbox" id="hl-toggle" onchange="renderNetwork()" checked>
             <label for="hl-toggle">HL Content</label>
         </div>
-        <button onclick="resetFocus()" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd; background: #fff;">Reset Map</button>
+        <button onclick="resetFocus()" style="padding: 8px 12px; cursor: pointer;">Reset Map</button>
     </div>
 
     <div id="main-content-wrapper">
@@ -96,18 +91,7 @@
                     let size = n.tier === 1 ? 48 : (n.tier === 2 ? 28 : 14);
                     let color = n.tier === 1 ? '#3498db' : (n.tier === 2 ? '#2ecc71' : '#95a5a6');
                     if (n.isHL) color = '#e67e22'; 
-                    
-                    return { 
-                        ...n, 
-                        size: size, 
-                        color: { background: color, border: '#2c3e50' }, 
-                        font: { 
-                            size: size/1.4, 
-                            vadjust: size + 5, // Dynamically pushes text below the circle
-                            strokeWidth: 5,
-                            strokeColor: '#ffffff'
-                        }
-                    };
+                    return { ...n, size: size, color: { background: color, border: '#2c3e50' }, font: { size: size/1.4, vadjust: size + 5, strokeWidth: 5, strokeColor: '#ffffff' } };
                 });
                 initNetwork();
                 renderNetwork();
@@ -120,21 +104,19 @@
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
                 interaction: { zoomSpeed: 0.3, hover: true },
                 physics: {
-                    enabled: true,
-                    forceAtlas2Based: {
-                        gravitationalConstant: -300, 
-                        centralGravity: 0.005,
-                        springConstant: 0.08,
-                        springLength: 150,
-                        damping: 0.4,
-                        avoidOverlap: 1 
-                    },
+                    enabled: true, // Started enabled for initial layout
+                    forceAtlas2Based: { gravitationalConstant: -300, centralGravity: 0.005, springLength: 150, avoidOverlap: 1 },
                     solver: 'forceAtlas2Based',
-                    stabilization: { enabled: true, iterations: 1000 }
+                    stabilization: { enabled: true, iterations: 200 } // Runs briefly to settle
                 }
             };
             
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
+
+            // THE WIGGLE FIX: Once stabilized, shut off physics
+            network.on("stabilizationIterationsDone", function () {
+                network.setOptions({ physics: false });
+            });
 
             network.on("click", function (params) {
                 if (params.nodes.length > 0) {
@@ -146,8 +128,6 @@
                     document.getElementById('info-panel').classList.add('active');
                     
                     const flowBtn = document.getElementById('flowchart-btn');
-                    
-                    // FIX: Button logic now uses the custom "hasPathway" flag
                     if (clickedNode.hasPathway) {
                         flowBtn.style.display = 'block';
                         flowBtn.onclick = function() {
