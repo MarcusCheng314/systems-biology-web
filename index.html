@@ -86,21 +86,35 @@
         function initNetwork() {
             const container = document.getElementById('biology-network');
             const options = {
-                nodes: { shape: 'dot', borderWidth: 2 },
+                nodes: nodes: {
+    shape: 'dot',
+    borderWidth: 2,
+    margin: 10, // Adds breathing room
+    font: {
+        size: 14,
+        color: '#333',
+        vadjust: 25 // This pushes the label DOWN so it doesn't sit on the node
+    }
+},
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
                 interaction: { zoomSpeed: 0.4, hover: true },
                 physics: {
-    barnesHut: {
-        gravitationalConstant: -4000, // Reduced repulsion
-        centralGravity: 0.3,
-        springLength: 150,
-        springConstant: 0.005 // Lower tension = less bouncy
+    enabled: true,
+    forceAtlas2Based: {
+        gravitationalConstant: -100,
+        centralGravity: 0.01,
+        springConstant: 0.08,
+        springLength: 100,
+        damping: 0.4, // High friction to stop the wiggling
+        avoidOverlap: 1 // Crucial for your overlapping issue
     },
-    maxVelocity: 50,
-    solver: 'barnesHut',
-    timestep: 0.5,
-    stabilization: { iterations: 150 } // Pre-calculates position so it doesn't jump on load
-}
+    solver: 'forceAtlas2Based',
+    stabilization: {
+        enabled: true,
+        iterations: 1000, // Pre-calculates the layout before showing it
+        updateInterval: 25
+    }
+},
             };
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
