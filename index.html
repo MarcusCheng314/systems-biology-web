@@ -89,7 +89,18 @@
                 nodes: { shape: 'dot', borderWidth: 2 },
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
                 interaction: { zoomSpeed: 0.4, hover: true },
-                physics: { barnesHut: { gravitationalConstant: -3000, springLength: 150 } }
+                physics: {
+    barnesHut: {
+        gravitationalConstant: -2000, // Reduced repulsion
+        centralGravity: 0.3,
+        springLength: 150,
+        springConstant: 0.04 // Lower tension = less bouncy
+    },
+    maxVelocity: 50,
+    solver: 'barnesHut',
+    timestep: 0.5,
+    stabilization: { iterations: 150 } // Pre-calculates position so it doesn't jump on load
+}
             };
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
@@ -119,8 +130,7 @@
 
                     nodesDataset.clear();
                     nodesDataset.add(styledNodes);
-                    
-                    // THE FIX: Only draw edges if BOTH connecting nodes are visible
+                
                     let visibleNodeIds = styledNodes.map(n => n.id);
                     let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
                     edgesDataset.clear();
@@ -149,7 +159,6 @@
             nodesDataset.clear();
             nodesDataset.add(baseNodes);
             
-            // THE FIX: Only draw edges if BOTH connecting nodes are visible
             let visibleNodeIds = baseNodes.map(n => n.id);
             let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
             edgesDataset.clear();
