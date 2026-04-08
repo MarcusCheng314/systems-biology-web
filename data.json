@@ -6,7 +6,8 @@
       "description": "The study of muscle structure, function, and the mechanisms of movement, including the detailed process of muscle contraction.",
       "tier": 1,
       "orgLevel": "Organisms",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 2,
@@ -14,7 +15,9 @@
       "description": "The physiological process linking the electrical excitation of the muscle cell membrane (sarcolemma) to the mechanical contraction of the muscle fiber.",
       "tier": 2,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": true,
+      "pathwaySteps": "Action Potential -> T-tubule Depolarization -> DHP Receptor Activation -> RyR Channel Opens -> Ca2+ Efflux into Sarcoplasm"
     },
     {
       "id": 3,
@@ -22,7 +25,9 @@
       "description": "The mechanism by which muscle contraction occurs, involving the sliding of actin filaments past myosin filaments, resulting in sarcomere shortening.",
       "tier": 2,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": true,
+      "pathwaySteps": "Ca2+ binds to Troponin -> Tropomyosin shifts -> Myosin-binding sites exposed -> Myosin heads form cross-bridges -> Power Stroke -> ATP binds to release Myosin"
     },
     {
       "id": 4,
@@ -30,7 +35,8 @@
       "description": "The specialized synapse between a motor neuron and a skeletal muscle fiber, where nerve impulses are transmitted to trigger muscle contraction.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 5,
@@ -38,7 +44,8 @@
       "description": "An electrical signal (depolarization) that travels along the sarcolemma and T-tubules, initiating the excitation-contraction coupling process.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 6,
@@ -46,7 +53,8 @@
       "description": "A neurotransmitter released by motor neurons at the neuromuscular junction; its binding to sarcolemmal receptors initiates depolarization.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 7,
@@ -54,7 +62,8 @@
       "description": "The plasma membrane of a muscle fiber; it propagates the action potential into the muscle cell and contains receptors for acetylcholine.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 8,
@@ -62,7 +71,8 @@
       "description": "Invaginations of the sarcolemma that extend deep into the muscle fiber, allowing rapid propagation of the action potential throughout the cell.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 9,
@@ -70,7 +80,8 @@
       "description": "Voltage-sensitive receptors located on the T-tubule membrane; they undergo a conformational change upon depolarization and are mechanically coupled to ryanodine receptors.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 10,
@@ -78,7 +89,8 @@
       "description": "Calcium release channels located on the sarcoplasmic reticulum membrane; mechanically activated by DHP receptors, allowing a massive efflux of calcium ions into the sarcoplasm.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 11,
@@ -86,7 +98,8 @@
       "description": "A specialized endoplasmic reticulum in muscle cells that stores and releases calcium ions, which are essential for muscle contraction.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 12,
@@ -94,7 +107,8 @@
       "description": "Key signaling molecules released from the SR into the sarcoplasm; they bind to troponin, initiating the molecular events of the sliding filament theory.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 13,
@@ -102,7 +116,8 @@
       "description": "The cytoplasm of a muscle fiber, where calcium ions are released and muscle contraction occurs.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 14,
@@ -110,7 +125,8 @@
       "description": "A protein complex on the actin filament that binds calcium ions, leading to a conformational change that shifts tropomyosin.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 15,
@@ -118,7 +134,8 @@
       "description": "A filamentous protein that winds around actin filaments and, in a relaxed muscle, covers the myosin-binding sites, preventing myosin attachment.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 16,
@@ -126,7 +143,8 @@
       "description": "Thin protein filaments in the sarcomere that contain myosin-binding sites; they are pulled by myosin during muscle contraction.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 17,
@@ -134,7 +152,8 @@
       "description": "Specific regions on the actin filaments where myosin heads attach to form cross-bridges.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 18,
@@ -142,7 +161,8 @@
       "description": "Globular heads of the myosin protein that bind to actin, hydrolyze ATP, and perform the power stroke to pull actin filaments.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 19,
@@ -150,7 +170,8 @@
       "description": "The breakdown of ATP into ADP and inorganic phosphate, releasing energy that energizes myosin heads for cross-bridge formation.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 20,
@@ -158,7 +179,8 @@
       "description": "The connections formed when energized myosin heads bind to the myosin-binding sites on actin filaments.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 21,
@@ -166,7 +188,8 @@
       "description": "The conformational change in the myosin head that pulls the actin filament towards the M-line, shortening the sarcomere.",
       "tier": 3,
       "orgLevel": "Molecules",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 22,
@@ -174,7 +197,8 @@
       "description": "The central line of the sarcomere, representing the anchoring point for myosin filaments; actin filaments are pulled towards it during contraction.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     },
     {
       "id": 23,
@@ -182,7 +206,8 @@
       "description": "The basic contractile unit of striated muscle, extending from one Z-disc to the next, composed of overlapping actin and myosin filaments.",
       "tier": 3,
       "orgLevel": "Cells",
-      "isHL": true
+      "isHL": true,
+      "hasPathway": false
     }
   ],
   "edges": [
