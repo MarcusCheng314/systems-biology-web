@@ -13,7 +13,9 @@
         .toggle-container { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d35400; }
         
         #main-content-wrapper { display: flex; width: 100vw; height: calc(100vh - 60px); transition: all 0.5s ease; }
-        #biology-network-container { flex: 1 1 100%; position: relative; transition: flex 0.5s ease; }
+        
+        /* FIX 1: Added overflow: hidden so the panel disappears when it slides away */
+        #biology-network-container { flex: 1 1 100%; position: relative; transition: flex 0.5s ease; overflow: hidden; }
         #flowchart-viewer-container { flex: 0 0 0%; background: white; transition: flex 0.5s ease; position: relative; overflow: hidden; }
 
         #main-content-wrapper.flowchart-active #biology-network-container { flex: 1 1 50%; }
@@ -104,16 +106,16 @@
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
                 interaction: { zoomSpeed: 0.3, hover: true },
                 physics: {
-                    enabled: true, // Started enabled for initial layout
+                    enabled: true,
                     forceAtlas2Based: { gravitationalConstant: -300, centralGravity: 0.005, springLength: 150, avoidOverlap: 1 },
                     solver: 'forceAtlas2Based',
-                    stabilization: { enabled: true, iterations: 200 } // Runs briefly to settle
+                    stabilization: { enabled: true, iterations: 200 } 
                 }
             };
             
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
-            // THE WIGGLE FIX: Once stabilized, shut off physics
+            // Turn off physics after settling to stop wiggle
             network.on("stabilizationIterationsDone", function () {
                 network.setOptions({ physics: false });
             });
@@ -143,11 +145,17 @@
                         flowBtn.style.display = 'none';
                     }
 
-                    let connectedIds = network.getConnectedNodes(clickedId);
+                    // FIX 2: Check the MASTER allEdges array for connections, not the currently visible map
+                    let connectedIds = [];
+                    allEdges.forEach(e => {
+                        if (e.from === clickedId) connectedIds.push(e.to);
+                        if (e.to === clickedId) connectedIds.push(e.from);
+                    });
                     connectedIds.push(clickedId);
                     
                     let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier < 3 || connectedIds.includes(n.id)));
                     let styledNodes = viewNodes.map(n => ({...n, opacity: connectedIds.includes(n.id) ? 1.0 : 0.2}));
+                    
                     nodesDataset.clear();
                     nodesDataset.add(styledNodes);
                 
@@ -156,6 +164,8 @@
                     edgesDataset.clear();
                     edgesDataset.add(visibleEdges);
                     
+                    // Turn physics back on so newly revealed Tier 3 nodes bounce into position nicely
+                    network.setOptions({ physics: true });
                     network.focus(clickedId, { scale: 1.2, animation: { duration: 600 }});
                 } else {
                     resetFocus();
@@ -180,6 +190,8 @@
             let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
             edgesDataset.clear();
             edgesDataset.add(visibleEdges);
+            // Re-run stabilization when resetting view
+            network.setOptions({ physics: true });
         }
 
         function closeFlowchartViewer() {
