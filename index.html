@@ -10,11 +10,18 @@
         
         #nav-bar { padding: 15px 20px; background: #fff; border-bottom: 1px solid #ddd; display: flex; gap: 20px; align-items: center; position: relative; z-index: 100; }
         select { padding: 8px; border-radius: 6px; border: 1px solid #ccc; }
-        .toggle-container { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d35400; }
+        
+        /* New Tier Checklist Dropdown Styling */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; color: #2c3e50; }
+        .dropdown-content { display: none; position: absolute; background: #fff; box-shadow: 0px 8px 16px rgba(0,0,0,0.15); padding: 15px; z-index: 101; border-radius: 8px; min-width: 180px; margin-top: 5px; border: 1px solid #eee; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content label { display: flex; align-items: center; margin-bottom: 10px; font-size: 14px; cursor: pointer; color: #34495e;}
+        .dropdown-content input { margin-right: 10px; cursor: pointer; }
+        
+        .toggle-container { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d35400; margin-left: auto;}
         
         #main-content-wrapper { display: flex; width: 100vw; height: calc(100vh - 60px); transition: all 0.5s ease; }
-        
-        /* FIX 1: Added overflow: hidden so the panel disappears when it slides away */
         #biology-network-container { flex: 1 1 100%; position: relative; transition: flex 0.5s ease; overflow: hidden; }
         #flowchart-viewer-container { flex: 0 0 0%; background: white; transition: flex 0.5s ease; position: relative; overflow: hidden; }
 
@@ -32,15 +39,10 @@
         }
         #info-panel.active { right: 20px; }
         #info-title { margin-top: 5px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; font-size: 1.2rem; }
-        
         .close-btn { position: absolute; top: 12px; right: 15px; cursor: pointer; color: #bdc3c7; font-size: 22px; transition: color 0.2s; }
         .close-btn:hover { color: #e74c3c; }
         
-        #flowchart-btn { 
-            display: none; margin-top: 20px; padding: 12px; width: 100%; 
-            background: #2ecc71; color: white; border: none; border-radius: 8px; 
-            cursor: pointer; font-weight: bold; transition: background 0.2s;
-        }
+        #flowchart-btn { display: none; margin-top: 20px; padding: 12px; width: 100%; background: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
         #flowchart-btn:hover { background: #27ae60; }
     </style>
 </head>
@@ -49,17 +51,29 @@
     <div id="nav-bar">
         <strong>Unit:</strong>
         <select id="level-filter" onchange="renderNetwork()">
-            <option value="All">All Topics</option>
+            <option value="All">All Levels</option>
             <option value="Molecules">Molecules</option>
             <option value="Cells">Cells</option>
             <option value="Organisms">Organisms</option>
             <option value="Ecosystems">Ecosystems</option>
         </select>
+
+        <div class="dropdown">
+            <div class="dropdown-btn">Visible Layers ▾</div>
+            <div class="dropdown-content">
+                <label><input type="checkbox" id="tier1-toggle" checked onchange="renderNetwork()"> Tier 1: Topics</label>
+                <label><input type="checkbox" id="tier2-toggle" checked onchange="renderNetwork()"> Tier 2: Concepts</label>
+                <label><input type="checkbox" id="tier3-toggle" checked onchange="renderNetwork()"> Tier 3: Mechanisms</label>
+                <label><input type="checkbox" id="tier4-toggle" checked onchange="renderNetwork()"> Tier 4: Components</label>
+            </div>
+        </div>
+
+        <button onclick="resetFocus()" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: #fff;">Reset Map</button>
+        
         <div class="toggle-container">
             <input type="checkbox" id="hl-toggle" onchange="renderNetwork()" checked>
             <label for="hl-toggle">HL Content</label>
         </div>
-        <button onclick="resetFocus()" style="padding: 8px 12px; cursor: pointer;">Reset Map</button>
     </div>
 
     <div id="main-content-wrapper">
@@ -90,10 +104,17 @@
             .then(data => {
                 allEdges = data.edges;
                 allNodes = data.nodes.map(n => {
-                    let size = n.tier === 1 ? 48 : (n.tier === 2 ? 28 : 14);
-                    let color = n.tier === 1 ? '#3498db' : (n.tier === 2 ? '#2ecc71' : '#95a5a6');
+                    let size = 10;
+                    let color = '#bdc3c7';
+                    
+                    if (n.tier === 1) { size = 48; color = '#3498db'; }
+                    else if (n.tier === 2) { size = 32; color = '#2ecc71'; }
+                    else if (n.tier === 3) { size = 20; color = '#9b59b6'; } // Purple for mechanisms
+                    else if (n.tier === 4) { size = 12; color = '#95a5a6'; } // Gray for components
+                    
                     if (n.isHL) color = '#e67e22'; 
-                    return { ...n, size: size, color: { background: color, border: '#2c3e50' }, font: { size: size/1.4, vadjust: size + 5, strokeWidth: 5, strokeColor: '#ffffff' } };
+                    
+                    return { ...n, size: size, color: { background: color, border: '#2c3e50' }, font: { size: Math.max(12, size/1.3), vadjust: size + 5, strokeWidth: 4, strokeColor: '#ffffff' } };
                 });
                 initNetwork();
                 renderNetwork();
@@ -107,90 +128,119 @@
                 interaction: { zoomSpeed: 0.3, hover: true },
                 physics: {
                     enabled: true,
-                    forceAtlas2Based: { gravitationalConstant: -300, centralGravity: 0.005, springLength: 150, avoidOverlap: 1 },
+                    forceAtlas2Based: { gravitationalConstant: -400, centralGravity: 0.005, springLength: 120, damping: 0.5, avoidOverlap: 1 },
                     solver: 'forceAtlas2Based',
-                    stabilization: { enabled: true, iterations: 200 } 
+                    stabilization: { enabled: true, iterations: 150 } 
                 }
             };
             
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
-            // Turn off physics after settling to stop wiggle
             network.on("stabilizationIterationsDone", function () {
                 network.setOptions({ physics: false });
             });
 
             network.on("click", function (params) {
-                if (params.nodes.length > 0) {
-                    const clickedId = params.nodes[0];
-                    const clickedNode = allNodes.find(n => n.id === clickedId);
-                    
-                    document.getElementById('info-title').innerText = clickedNode.label + (clickedNode.isHL ? " [HL]" : "");
-                    document.getElementById('info-desc').innerText = clickedNode.description || "No notes available.";
-                    document.getElementById('info-panel').classList.add('active');
-                    
-                    const flowBtn = document.getElementById('flowchart-btn');
-                    if (clickedNode.hasPathway) {
-                        flowBtn.style.display = 'block';
-                        flowBtn.onclick = function() {
-                            document.getElementById('main-content-wrapper').classList.add('flowchart-active');
-                            closePanel();
-                            setTimeout(() => {
-                                network.setSize('100%', '100%');
-                                network.focus(clickedId, { scale: 1.1, animation: { duration: 500 }});
-                                document.getElementById('flowchart-frame').src = `flowchart.html?concept=${encodeURIComponent(clickedNode.label)}`;
-                            }, 100);
-                        };
-                    } else {
-                        flowBtn.style.display = 'none';
-                    }
+                // If they click empty space, do nothing so they can safely drag
+                if (params.nodes.length === 0) return; 
 
-                    // FIX 2: Check the MASTER allEdges array for connections, not the currently visible map
-                    let connectedIds = [];
-                    allEdges.forEach(e => {
-                        if (e.from === clickedId) connectedIds.push(e.to);
-                        if (e.to === clickedId) connectedIds.push(e.from);
-                    });
-                    connectedIds.push(clickedId);
-                    
-                    let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier < 3 || connectedIds.includes(n.id)));
-                    let styledNodes = viewNodes.map(n => ({...n, opacity: connectedIds.includes(n.id) ? 1.0 : 0.2}));
-                    
-                    nodesDataset.clear();
-                    nodesDataset.add(styledNodes);
+                const clickedId = params.nodes[0];
+                const clickedNode = allNodes.find(n => n.id === clickedId);
                 
-                    let visibleNodeIds = styledNodes.map(n => n.id);
-                    let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
-                    edgesDataset.clear();
-                    edgesDataset.add(visibleEdges);
-                    
-                    // Turn physics back on so newly revealed Tier 3 nodes bounce into position nicely
-                    network.setOptions({ physics: true });
-                    network.focus(clickedId, { scale: 1.2, animation: { duration: 600 }});
+                document.getElementById('info-title').innerText = clickedNode.label + (clickedNode.isHL ? " [HL]" : "");
+                document.getElementById('info-desc').innerText = clickedNode.description || "No notes available.";
+                document.getElementById('info-panel').classList.add('active');
+                
+                const flowBtn = document.getElementById('flowchart-btn');
+                if (clickedNode.hasPathway) {
+                    flowBtn.style.display = 'block';
+                    flowBtn.onclick = function() {
+                        document.getElementById('main-content-wrapper').classList.add('flowchart-active');
+                        closePanel();
+                        setTimeout(() => {
+                            network.setSize('100%', '100%');
+                            network.focus(clickedId, { scale: 1.1, animation: { duration: 500 }});
+                            document.getElementById('flowchart-frame').src = `flowchart.html?concept=${encodeURIComponent(clickedNode.label)}`;
+                        }, 100);
+                    };
                 } else {
-                    resetFocus();
+                    flowBtn.style.display = 'none';
                 }
+
+                // Gather connections
+                let connectedIds = [];
+                allEdges.forEach(e => {
+                    if (e.from === clickedId) connectedIds.push(e.to);
+                    if (e.to === clickedId) connectedIds.push(e.from);
+                });
+                connectedIds.push(clickedId);
+                
+                // Track how many nodes were on screen BEFORE the click to prevent wiggle
+                const previouslyVisibleCount = nodesDataset.length;
+
+                let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier <= 2 || connectedIds.includes(n.id)));
+                let styledNodes = viewNodes.map(n => ({...n, opacity: connectedIds.includes(n.id) ? 1.0 : 0.15}));
+                
+                nodesDataset.clear();
+                nodesDataset.add(styledNodes);
+            
+                let visibleNodeIds = styledNodes.map(n => n.id);
+                let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
+                edgesDataset.clear();
+                edgesDataset.add(visibleEdges);
+                
+                // Only turn on physics if NEW nodes appeared that need to push away from each other
+                if (styledNodes.length > previouslyVisibleCount) {
+                    network.setOptions({ physics: true });
+                } else {
+                    network.setOptions({ physics: false });
+                }
+
+                // Progressive Zoom Logic based on Tier
+                let targetScale = 1.0;
+                if (clickedNode.tier === 1) targetScale = 1.2;
+                if (clickedNode.tier === 2) targetScale = 1.6;
+                if (clickedNode.tier === 3) targetScale = 2.2;
+                if (clickedNode.tier === 4) targetScale = 3.0;
+
+                network.focus(clickedId, { scale: targetScale, animation: { duration: 800, easingFunction: 'easeInOutQuad' }});
             });
         }
 
         function matchesFilters(node) {
             const level = document.getElementById('level-filter').value;
             const showHL = document.getElementById('hl-toggle').checked;
+            
+            const showT1 = document.getElementById('tier1-toggle').checked;
+            const showT2 = document.getElementById('tier2-toggle').checked;
+            const showT3 = document.getElementById('tier3-toggle').checked;
+            const showT4 = document.getElementById('tier4-toggle').checked;
+
             if (level !== "All" && node.orgLevel !== level) return false;
             if (!showHL && node.isHL) return false;
+            
+            if (node.tier === 1 && !showT1) return false;
+            if (node.tier === 2 && !showT2) return false;
+            if (node.tier === 3 && !showT3) return false;
+            if (node.tier === 4 && !showT4) return false;
+
             return true;
         }
 
         function renderNetwork() {
             closePanel();
-            let baseNodes = allNodes.filter(n => matchesFilters(n) && n.tier < 3).map(n => ({...n, opacity: 1}));
+            
+            // Only render base nodes that match the active Tier checkboxes
+            let baseNodes = allNodes.filter(n => matchesFilters(n) && n.tier <= 2).map(n => ({...n, opacity: 1}));
+            
             nodesDataset.clear();
             nodesDataset.add(baseNodes);
+            
             let visibleNodeIds = baseNodes.map(n => n.id);
             let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
             edgesDataset.clear();
             edgesDataset.add(visibleEdges);
-            // Re-run stabilization when resetting view
+            
             network.setOptions({ physics: true });
         }
 
@@ -204,7 +254,7 @@
             closePanel();
             closeFlowchartViewer();
             renderNetwork();
-            network.fit({ animation: { duration: 600 }});
+            network.fit({ animation: { duration: 800 }});
         }
 
         function closePanel() {
