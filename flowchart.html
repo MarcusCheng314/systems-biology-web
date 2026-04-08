@@ -3,44 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <title>Pathway Flowchart</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 40px; }
-        #graph-container { width: 100%; max-width: 800px; }
-    </script>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px 40px; margin: 0; background: #fff; }
+        #title { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #2ecc71; padding-bottom: 10px; width: 100%; text-align: center; }
+        #graph-container { width: 100%; display: flex; justify-content: center; margin-top: 20px;}
+        #error-msg { color: #e74c3c; background: #fadbd8; padding: 15px; border-radius: 8px; display: none; margin-top: 20px;}
+    </style>
 </head>
 <body>
     <h1 id="title">Pathway Analysis</h1>
+    <div id="error-msg"></div>
     <div id="graph-container" class="mermaid">
-        %% The chart will be injected here
+        %% The flowchart will be injected here
     </div>
 
     <script>
-        mermaid.initialize({ startOnLoad: true });
+        // Initialize mermaid in "secure" mode
+        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: 'neutral' });
 
-        // Get the node name from the URL (e.g., flowchart.html?concept=MuscleContraction)
-        const urlParams = new URLSearchParams(window.location.search);
-        const concept = urlParams.get('concept');
-        document.getElementById('title').innerText = "Pathway: " + concept;
+        async function renderDynamicFlowchart() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const conceptName = urlParams.get('concept');
+            const container = document.getElementById('graph-container');
+            const errorPanel = document.getElementById('error-msg');
+            
+            document.getElementById('title').innerText = conceptName;
 
-        // For now, we manually define a few key pathways. 
-        // Later, we can have Gemini generate these automatically!
-        const pathways = {
-            "Sliding Filament Theory": `graph TD
-                A[Ca2+ binds to Troponin] --> B[Tropomyosin shifts]
-                B --> C[Myosin binding sites exposed]
-                C --> D[Myosin forms Cross-bridge]
-                D --> E[Power Stroke pulls Actin]
-                E --> F[ATP binds to release Myosin]`,
-            "Excitation-Contraction Coupling": `graph TD
-                A[Action Potential] --> B[T-Tubule Depolarization]
-                B --> C[DHP Receptor Change]
-                C --> D[RyR Channel Opens]
-                D --> E[Ca2+ Efflux into Sarcoplasm]`
-        };
+            try {
+                // 1. Fetch the actual data.json updated by n8n
+                const response = await fetch('data.json');
+                const data = await response.json();
 
-        const container = document.getElementById('graph-container');
-        container.innerHTML = pathways[concept] || "graph TD\\n A[Notes available soon for this pathway]";
+                // 2. Find the Tier 2 node that matches the concept name
+                const matchedNode = data.nodes.find(n => n.label === conceptName);
+
+                if (matchedNode && matchedNode.pathwaySteps) {
+                    // 3. Dynamic Parser: Mermaid requires --> arrows, not ->.
+                    // n8n output is 'A -> B -> C', which Mermaid syntax accepts as 'graph TD\nA-->B-->C'
+                    const cleanSteps = matchedNode.pathwaySteps.replaceAll(' -> ', '-->');
+                    const mermaidDefinition = `graph TD\n${cleanSteps}`;
+                    
+                    // 4. Inject the definition and tell Mermaid to render it
+                    container.innerHTML = mermaidDefinition;
+                    await mermaid.run(); 
+                } else {
+                    throw new Error(`Pathway data not found for "${conceptName}". Ensure Gemini generated 'pathwaySteps' for this Tier 2 node.`);
+                }
+            } catch (error) {
+                console.error('Mermaid rendering error:', error);
+                errorPanel.innerText = error.message;
+                errorPanel.style.display = 'block';
+                container.style.display = 'none';
+            }
+        }
+
+        renderDynamicFlowchart();
     </script>
 </body>
 </html>
