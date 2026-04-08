@@ -8,89 +8,66 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; background: #f8f9fa; overflow: hidden; }
         
-        /* Control Bar */
         #nav-bar { padding: 15px 20px; background: #fff; border-bottom: 1px solid #ddd; display: flex; gap: 20px; align-items: center; position: relative; z-index: 100; }
         select { padding: 8px; border-radius: 6px; border: 1px solid #ccc; }
         .toggle-container { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d35400; }
         
-        /* The main re-sizable wrapper */
-        #main-content-wrapper {
-            display: flex;
-            width: 100vw;
-            height: calc(100vh - 60px);
-            transition: all 0.5s ease;
-        }
+        #main-content-wrapper { display: flex; width: 100vw; height: calc(100vh - 60px); transition: all 0.5s ease; }
+        #biology-network-container { flex: 1 1 100%; position: relative; transition: flex 0.5s ease; }
+        #flowchart-viewer-container { flex: 0 0 0%; background: white; transition: flex 0.5s ease; position: relative; overflow: hidden; }
 
-        /* Left Side: The Map */
-        #biology-network-container {
-            flex: 1 1 100%;
-            position: relative;
-            transition: flex 0.5s ease;
-        }
-
-        /* Right Side: The Flowchart (Initially hidden) */
-        #flowchart-viewer-container {
-            flex: 0 0 0%;
-            background: white;
-            border-left: 0px solid #ddd;
-            transition: flex 0.5s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* State when flowchart is active */
-        #main-content-wrapper.flowchart-active #biology-network-container {
-            flex: 1 1 50%;
-        }
-        #main-content-wrapper.flowchart-active #flowchart-viewer-container {
-            flex: 1 1 50%;
-            border-left: 2px solid #ddd;
-        }
+        #main-content-wrapper.flowchart-active #biology-network-container { flex: 1 1 50%; }
+        #main-content-wrapper.flowchart-active #flowchart-viewer-container { flex: 1 1 50%; border-left: 2px solid #ddd; }
 
         #biology-network { width: 100%; height: 100%; }
         #flowchart-frame { width: 100%; height: 100%; border: none; }
 
-        /* Popup Detail Panel */
+        /* The Info Panel Fixes */
         #info-panel {
             position: absolute; top: 20px; right: -400px; width: 320px;
             background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
-            padding: 20px; border-radius: 12px; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
-            transition: right 0.3s ease; max-height: 80vh; overflow-y: auto; z-index: 10;
+            padding: 25px; border-radius: 12px; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 80vh; overflow-y: auto; z-index: 10;
         }
         #info-panel.active { right: 20px; }
-        #info-title { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        #info-title { margin-top: 5px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; font-size: 1.2rem; }
         
-        .close-btn { position: absolute; top: 10px; right: 10px; cursor: pointer; color: #999; font-weight: bold; font-size: 20px;}
+        /* Close Button Styling */
+        .close-btn { 
+            position: absolute; top: 12px; right: 15px; cursor: pointer; 
+            color: #bdc3c7; font-size: 22px; transition: color 0.2s;
+        }
+        .close-btn:hover { color: #e74c3c; }
         
         #flowchart-btn { 
             display: none; margin-top: 20px; padding: 12px; width: 100%; 
-            background: #2ecc71; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;
+            background: #2ecc71; color: white; border: none; border-radius: 8px; 
+            cursor: pointer; font-weight: bold; transition: background 0.2s;
         }
+        #flowchart-btn:hover { background: #27ae60; }
     </style>
 </head>
 <body>
 
     <div id="nav-bar">
-        <strong>Organization Level:</strong>
+        <strong>Unit:</strong>
         <select id="level-filter" onchange="renderNetwork()">
-            <option value="All">View All</option>
-            <option value="Molecules">1. Molecules</option>
-            <option value="Cells">2. Cells</option>
-            <option value="Organisms">3. Organisms</option>
-            <option value="Ecosystems">4. Ecosystems</option>
+            <option value="All">All Topics</option>
+            <option value="Molecules">Molecules</option>
+            <option value="Cells">Cells</option>
+            <option value="Organisms">Organisms</option>
+            <option value="Ecosystems">Ecosystems</option>
         </select>
-        
         <div class="toggle-container">
             <input type="checkbox" id="hl-toggle" onchange="renderNetwork()" checked>
-            <label for="hl-toggle">Include HL Content</label>
+            <label for="hl-toggle">HL Content</label>
         </div>
-        <button onclick="resetFocus()" style="padding: 8px 12px; cursor: pointer;">Reset View</button>
+        <button onclick="resetFocus()" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; border: 1px solid #ddd; background: #fff;">Reset Map</button>
     </div>
 
     <div id="main-content-wrapper">
         <div id="biology-network-container">
             <div id="biology-network"></div>
-            
             <div id="info-panel">
                 <span class="close-btn" onclick="closePanel()">✕</span>
                 <h2 id="info-title">Concept</h2>
@@ -98,7 +75,6 @@
                 <button id="flowchart-btn">View Pathway Flowchart</button>
             </div>
         </div>
-
         <div id="flowchart-viewer-container">
             <span class="close-btn" onclick="closeFlowchartViewer()" style="z-index: 100; right: 20px; top: 20px;">✕</span>
             <iframe id="flowchart-frame" src="about:blank"></iframe>
@@ -117,27 +93,22 @@
             .then(data => {
                 allEdges = data.edges;
                 allNodes = data.nodes.map(n => {
-                    let size = n.tier === 1 ? 45 : (n.tier === 2 ? 25 : 12);
+                    let size = n.tier === 1 ? 48 : (n.tier === 2 ? 28 : 14);
                     let color = n.tier === 1 ? '#3498db' : (n.tier === 2 ? '#2ecc71' : '#95a5a6');
                     if (n.isHL) color = '#e67e22'; 
                     
-                    // Dynamic Label Positioning: Tier 1 labels need to sit further out
-                    let vadjustValue = n.tier === 1 ? 35 : 25;
-
                     return { 
                         ...n, 
                         size: size, 
                         color: { background: color, border: '#2c3e50' }, 
                         font: { 
-                            size: size/1.5, 
-                            vadjust: vadjustValue,
-                            strokeWidth: 4,
+                            size: size/1.4, 
+                            vadjust: size + 5, // Dynamically pushes text below the circle
+                            strokeWidth: 5,
                             strokeColor: '#ffffff'
-                        },
-                        labelHighlightBold: true
+                        }
                     };
                 });
-                
                 initNetwork();
                 renderNetwork();
             });
@@ -145,16 +116,16 @@
         function initNetwork() {
             const container = document.getElementById('biology-network');
             const options = {
-                nodes: { shape: 'dot', borderWidth: 2, margin: 10 },
+                nodes: { shape: 'dot', borderWidth: 2 },
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
-                interaction: { zoomSpeed: 0.4, hover: true },
+                interaction: { zoomSpeed: 0.3, hover: true },
                 physics: {
                     enabled: true,
                     forceAtlas2Based: {
-                        gravitationalConstant: -250, // Stronger repulsion to fix overlaps
+                        gravitationalConstant: -300, 
                         centralGravity: 0.005,
                         springConstant: 0.08,
-                        springLength: 120,
+                        springLength: 150,
                         damping: 0.4,
                         avoidOverlap: 1 
                     },
@@ -171,18 +142,17 @@
                     const clickedNode = allNodes.find(n => n.id === clickedId);
                     
                     document.getElementById('info-title').innerText = clickedNode.label + (clickedNode.isHL ? " [HL]" : "");
-                    document.getElementById('info-desc').innerText = clickedNode.description || "No detailed notes provided.";
+                    document.getElementById('info-desc').innerText = clickedNode.description || "No notes available.";
                     document.getElementById('info-panel').classList.add('active');
                     
                     const flowBtn = document.getElementById('flowchart-btn');
-                    if (clickedNode.tier === 2) {
+                    
+                    // FIX: Button logic now uses the custom "hasPathway" flag
+                    if (clickedNode.hasPathway) {
                         flowBtn.style.display = 'block';
                         flowBtn.onclick = function() {
-                            // Seamless Squeeze Logic
                             document.getElementById('main-content-wrapper').classList.add('flowchart-active');
                             closePanel();
-                            
-                            // Re-center network after resize
                             setTimeout(() => {
                                 network.setSize('100%', '100%');
                                 network.focus(clickedId, { scale: 1.1, animation: { duration: 500 }});
@@ -196,15 +166,8 @@
                     let connectedIds = network.getConnectedNodes(clickedId);
                     connectedIds.push(clickedId);
                     
-                    let viewNodes = allNodes.filter(n => {
-                        if (!matchesFilters(n)) return false;
-                        return n.tier < 3 || connectedIds.includes(n.id);
-                    });
-
-                    let styledNodes = viewNodes.map(n => ({
-                        ...n, opacity: connectedIds.includes(n.id) ? 1.0 : 0.35
-                    }));
-
+                    let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier < 3 || connectedIds.includes(n.id)));
+                    let styledNodes = viewNodes.map(n => ({...n, opacity: connectedIds.includes(n.id) ? 1.0 : 0.2}));
                     nodesDataset.clear();
                     nodesDataset.add(styledNodes);
                 
@@ -230,8 +193,7 @@
 
         function renderNetwork() {
             closePanel();
-            let baseNodes = allNodes.filter(n => matchesFilters(n) && n.tier < 3);
-            baseNodes = baseNodes.map(n => ({ ...n, opacity: 1.0 }));
+            let baseNodes = allNodes.filter(n => matchesFilters(n) && n.tier < 3).map(n => ({...n, opacity: 1}));
             nodesDataset.clear();
             nodesDataset.add(baseNodes);
             let visibleNodeIds = baseNodes.map(n => n.id);
@@ -243,10 +205,7 @@
         function closeFlowchartViewer() {
             document.getElementById('main-content-wrapper').classList.remove('flowchart-active');
             document.getElementById('flowchart-frame').src = 'about:blank';
-            setTimeout(() => {
-                network.setSize('100%', '100%');
-                network.fit({ animation: { duration: 500 }});
-            }, 500);
+            setTimeout(() => { network.setSize('100%', '100%'); network.fit({ animation: { duration: 500 }}); }, 500);
         }
 
         function resetFocus() {
