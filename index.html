@@ -16,7 +16,7 @@
         .dropdown-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; color: #2c3e50; transition: background 0.2s; }
         .dropdown-btn:hover { background: #f1f2f6; }
         .dropdown-content { display: none; position: absolute; background: #fff; box-shadow: 0px 8px 16px rgba(0,0,0,0.15); padding: 15px; z-index: 101; border-radius: 8px; min-width: 190px; margin-top: 5px; border: 1px solid #eee; }
-        .dropdown-content.show { display: block; } /* Controlled by JS now */
+        .dropdown-content.show { display: block; }
         .dropdown-content label { display: flex; align-items: center; margin-bottom: 12px; font-size: 14px; cursor: pointer; color: #34495e;}
         .dropdown-content input { margin-right: 10px; cursor: pointer; width: 16px; height: 16px; }
         
@@ -100,7 +100,6 @@
         let nodesDataset = new vis.DataSet();
         let edgesDataset = new vis.DataSet();
 
-        // Dropdown Logic
         function toggleDropdown() {
             document.getElementById("layer-dropdown").classList.toggle("show");
         }
@@ -128,7 +127,6 @@
                     
                     if (n.isHL) color = '#e67e22'; 
                     
-                    // Stronger push-down for text to prevent overlap
                     return { ...n, size: size, color: { background: color, border: '#2c3e50' }, font: { size: Math.max(14, size/1.2), vadjust: size + 15, strokeWidth: 5, strokeColor: '#ffffff' } };
                 });
                 initNetwork();
@@ -142,12 +140,12 @@
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
                 interaction: { zoomSpeed: 0.3, hover: true },
                 physics: {
-                    enabled: true, // Kept completely on, but highly damped
+                    enabled: true,
                     forceAtlas2Based: { 
-                        gravitationalConstant: -1000, // Massive push apart to prevent overlap
+                        gravitationalConstant: -1000, 
                         centralGravity: 0.005, 
-                        springLength: 200, // Longer edges
-                        damping: 0.85, // High friction kills the wiggle instantly
+                        springLength: 200, 
+                        damping: 0.85, 
                         avoidOverlap: 1 
                     },
                     solver: 'forceAtlas2Based',
@@ -158,7 +156,7 @@
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
             network.on("click", function (params) {
-                if (params.nodes.length === 0) return; // Allow smooth empty-space dragging
+                if (params.nodes.length === 0) return; 
 
                 const clickedId = params.nodes[0];
                 const clickedNode = allNodes.find(n => n.id === clickedId);
@@ -190,12 +188,11 @@
                 });
                 connectedIds.push(clickedId);
 
-                // Define the nodes that should be rendered based on the click
+                const previouslyVisibleCount = nodesDataset.length;
+
                 let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier <= 2 || connectedIds.includes(n.id)));
                 let styledNodes = viewNodes.map(n => ({...n, opacity: connectedIds.includes(n.id) ? 1.0 : 0.15}));
                 
-                // THE CLUMP FIX: Using .update() and .remove() instead of clear()
-                // This forces vis.js to remember the X/Y coordinates of existing nodes.
                 let currentIds = nodesDataset.getIds();
                 let newIds = styledNodes.map(n => n.id);
                 let idsToRemove = currentIds.filter(id => !newIds.includes(id));
@@ -203,7 +200,6 @@
                 nodesDataset.update(styledNodes);
                 nodesDataset.remove(idsToRemove);
             
-                // Safely update edges
                 let visibleEdges = allEdges.filter(e => newIds.includes(e.from) && newIds.includes(e.to));
                 let currentEdgeIds = edgesDataset.getIds();
                 let newEdgeIds = visibleEdges.map(e => e.id);
@@ -212,14 +208,14 @@
                 edgesDataset.update(visibleEdges);
                 edgesDataset.remove(edgesToRemove);
 
-                // Progressive Zoom Logic
-                let targetScale = 1.0;
-                if (clickedNode.tier === 1) targetScale = 1.2;
-                if (clickedNode.tier === 2) targetScale = 1.6;
-                if (clickedNode.tier === 3) targetScale = 2.2;
-                if (clickedNode.tier === 4) targetScale = 3.0;
+                if (styledNodes.length > previouslyVisibleCount) {
+                    network.setOptions({ physics: true });
+                } else {
+                    network.setOptions({ physics: false });
+                }
 
-                network.focus(clickedId, { scale: targetScale, animation: { duration: 800, easingFunction: 'easeInOutQuad' }});
+                // Smooth pan and gentle focus without extreme scaling
+                network.focus(clickedId, { scale: 1.1, animation: { duration: 800, easingFunction: 'easeInOutQuad' }});
             });
         }
 
@@ -248,7 +244,6 @@
             
             let baseNodes = allNodes.filter(n => matchesFilters(n) && n.tier <= 2).map(n => ({...n, opacity: 1}));
             
-            // Re-apply safe update logic here as well
             let currentIds = nodesDataset.getIds();
             let newIds = baseNodes.map(n => n.id);
             let idsToRemove = currentIds.filter(id => !newIds.includes(id));
@@ -263,6 +258,8 @@
             
             edgesDataset.update(visibleEdges);
             edgesDataset.remove(edgesToRemove);
+            
+            network.setOptions({ physics: true });
         }
 
         function closeFlowchartViewer() {
