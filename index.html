@@ -68,17 +68,14 @@
         let nodesDataset = new vis.DataSet();
         let edgesDataset = new vis.DataSet();
 
-        // 1. Fetch and format data based on Tiers
         fetch('data.json')
             .then(res => res.json())
             .then(data => {
                 allEdges = data.edges;
                 allNodes = data.nodes.map(n => {
-                    // Size and color based on Tier
                     let size = n.tier === 1 ? 45 : (n.tier === 2 ? 25 : 12);
                     let color = n.tier === 1 ? '#3498db' : (n.tier === 2 ? '#2ecc71' : '#95a5a6');
-                    if (n.isHL) color = '#e67e22'; // HL nodes get a special color
-                    
+                    if (n.isHL) color = '#e67e22'; 
                     return { ...n, size: size, color: { background: color, border: '#2c3e50' }, font: { size: size/1.5 } };
                 });
                 
@@ -96,32 +93,25 @@
             };
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
-            // 2. The Click Logic (Revealing Tier 3 and Dimming)
             network.on("click", function (params) {
                 if (params.nodes.length > 0) {
                     const clickedId = params.nodes[0];
                     const clickedNode = allNodes.find(n => n.id === clickedId);
                     
-                    // Show panel
                     document.getElementById('info-title').innerText = clickedNode.label + (clickedNode.isHL ? " [HL]" : "");
                     document.getElementById('info-desc').innerText = clickedNode.description || "No detailed notes provided.";
                     document.getElementById('info-panel').classList.add('active');
                     
-                    // Show flowchart button eventually (Requirement 3 placeholder)
                     document.getElementById('flowchart-btn').style.display = clickedNode.tier === 2 ? 'block' : 'none';
 
-                    // Reveal Tier 3 & Handle Opacity
                     let connectedIds = network.getConnectedNodes(clickedId);
                     connectedIds.push(clickedId);
                     
                     let viewNodes = allNodes.filter(n => {
-                        // Keep nodes that match the current dropdown filters
                         if (!matchesFilters(n)) return false;
-                        // Show Tier 1 & 2. Show Tier 3 ONLY if it's connected to what we clicked.
                         return n.tier < 3 || connectedIds.includes(n.id);
                     });
 
-                    // Apply opacity (1.0 for connected, 0.35 for unrelated)
                     let styledNodes = viewNodes.map(n => {
                         let opacity = connectedIds.includes(n.id) ? 1.0 : 0.35;
                         return { ...n, opacity: opacity };
@@ -130,7 +120,12 @@
                     nodesDataset.clear();
                     nodesDataset.add(styledNodes);
                     
-                    // Zoom
+                    // THE FIX: Only draw edges if BOTH connecting nodes are visible
+                    let visibleNodeIds = styledNodes.map(n => n.id);
+                    let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
+                    edgesDataset.clear();
+                    edgesDataset.add(visibleEdges);
+                    
                     network.focus(clickedId, { scale: 1.2, animation: { duration: 600 }});
                 } else {
                     resetFocus();
@@ -138,7 +133,6 @@
             });
         }
 
-        // Filter Logic
         function matchesFilters(node) {
             const level = document.getElementById('level-filter').value;
             const showHL = document.getElementById('hl-toggle').checked;
@@ -147,18 +141,19 @@
             return true;
         }
 
-        // Render base view (Tier 1 and 2 only)
         function renderNetwork() {
             closePanel();
             let baseNodes = allNodes.filter(n => matchesFilters(n) && n.tier < 3);
-            
-            // Reset opacity to 1
             baseNodes = baseNodes.map(n => ({ ...n, opacity: 1.0 }));
             
             nodesDataset.clear();
             nodesDataset.add(baseNodes);
+            
+            // THE FIX: Only draw edges if BOTH connecting nodes are visible
+            let visibleNodeIds = baseNodes.map(n => n.id);
+            let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
             edgesDataset.clear();
-            edgesDataset.add(allEdges);
+            edgesDataset.add(visibleEdges);
         }
 
         function resetFocus() {
