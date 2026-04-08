@@ -84,90 +84,94 @@
             });
 
         function initNetwork() {
-            const container = document.getElementById('biology-network');
-            const options = {
-                nodes: {
-    shape: 'dot',
-    borderWidth: 2,
-    margin: 10, // Adds breathing room
-    font: {
-        size: 14,
-        color: '#333',
-        vadjust: 25 // This pushes the label DOWN so it doesn't sit on the node
-    }
-},
-                edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
-                interaction: { zoomSpeed: 0.4, hover: true },
-                physics: {
-    enabled: true,
-    forceAtlas2Based: {
-        gravitationalConstant: -100,
-        centralGravity: 0.01,
-        springConstant: 0.08,
-        springLength: 100,
-        damping: 0.4, // High friction to stop the wiggling
-        avoidOverlap: 1 // Crucial for your overlapping issue
-    },
-    solver: 'forceAtlas2Based',
-    stabilization: {
-        enabled: true,
-        iterations: 1000, // Pre-calculates the layout before showing it
-        updateInterval: 25
-    }
-},
-            };
-            network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
-
-            network.on("click", function (params) {
-    if (params.nodes.length > 0) {
-        const clickedId = params.nodes[0];
-        const clickedNode = allNodes.find(n => n.id === clickedId);
-        
-        // 1. Update the sidebar text
-        document.getElementById('info-title').innerText = clickedNode.label + (clickedNode.isHL ? " [HL]" : "");
-        document.getElementById('info-desc').innerText = clickedNode.description || "No detailed notes provided.";
-        document.getElementById('info-panel').classList.add('active');
-        
-        // 2. Logic for the Flowchart Button
-        const flowBtn = document.getElementById('flowchart-btn');
-        if (clickedNode.tier === 2) {
-            flowBtn.style.display = 'block';
-            // This line tells the browser where to go when the button is clicked
-            flowBtn.onclick = function() {
-                window.open(`flowchart.html?concept=${encodeURIComponent(clickedNode.label)}`, '_blank');
-            };
-        } else {
-            flowBtn.style.display = 'none';
+    const container = document.getElementById('biology-network');
+    const options = {
+        nodes: {
+            shape: 'dot',
+            borderWidth: 2,
+            margin: 10,
+            font: {
+                size: 14,
+                color: '#333',
+                vadjust: 25 
+            }
+        },
+        edges: { 
+            arrows: 'to', 
+            color: '#bdc3c7', 
+            smooth: { type: 'continuous' } 
+        },
+        interaction: { 
+            zoomSpeed: 0.4, 
+            hover: true 
+        },
+        physics: {
+            enabled: true,
+            forceAtlas2Based: {
+                gravitationalConstant: -100,
+                centralGravity: 0.01,
+                springConstant: 0.08,
+                springLength: 100,
+                damping: 0.4,
+                avoidOverlap: 1
+            },
+            solver: 'forceAtlas2Based',
+            stabilization: {
+                enabled: true,
+                iterations: 1000,
+                updateInterval: 25
+            }
         }
-
-        // 3. Keep your existing highlighting and dimming logic
-        let connectedIds = network.getConnectedNodes(clickedId);
-        connectedIds.push(clickedId);
-        
-        let viewNodes = allNodes.filter(n => {
-            if (!matchesFilters(n)) return false;
-            return n.tier < 3 || connectedIds.includes(n.id);
-        });
-
-        let styledNodes = viewNodes.map(n => {
-            let opacity = connectedIds.includes(n.id) ? 1.0 : 0.35;
-            return { ...n, opacity: opacity };
-        });
-
-        nodesDataset.clear();
-        nodesDataset.add(styledNodes);
+    };
     
-        let visibleNodeIds = styledNodes.map(n => n.id);
-        let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
-        edgesDataset.clear();
-        edgesDataset.add(visibleEdges);
+    network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
+
+    network.on("click", function (params) {
+        if (params.nodes.length > 0) {
+            const clickedId = params.nodes[0];
+            const clickedNode = allNodes.find(n => n.id === clickedId);
+            
+            document.getElementById('info-title').innerText = clickedNode.label + (clickedNode.isHL ? " [HL]" : "");
+            document.getElementById('info-desc').innerText = clickedNode.description || "No detailed notes provided.";
+            document.getElementById('info-panel').classList.add('active');
+            
+            const flowBtn = document.getElementById('flowchart-btn');
+            if (clickedNode.tier === 2) {
+                flowBtn.style.display = 'block';
+                flowBtn.onclick = function() {
+                    window.open(`flowchart.html?concept=${encodeURIComponent(clickedNode.label)}`, '_blank');
+                };
+            } else {
+                flowBtn.style.display = 'none';
+            }
+
+            let connectedIds = network.getConnectedNodes(clickedId);
+            connectedIds.push(clickedId);
+            
+            let viewNodes = allNodes.filter(n => {
+                if (!matchesFilters(n)) return false;
+                return n.tier < 3 || connectedIds.includes(n.id);
+            });
+
+            let styledNodes = viewNodes.map(n => {
+                let opacity = connectedIds.includes(n.id) ? 1.0 : 0.35;
+                return { ...n, opacity: opacity };
+            });
+
+            nodesDataset.clear();
+            nodesDataset.add(styledNodes);
         
-        network.focus(clickedId, { scale: 1.2, animation: { duration: 600 }});
-    } else {
-        resetFocus();
-    }
-});
+            let visibleNodeIds = styledNodes.map(n => n.id);
+            let visibleEdges = allEdges.filter(e => visibleNodeIds.includes(e.from) && visibleNodeIds.includes(e.to));
+            edgesDataset.clear();
+            edgesDataset.add(visibleEdges);
+            
+            network.focus(clickedId, { scale: 1.2, animation: { duration: 600 }});
+        } else {
+            resetFocus();
         }
+    });
+}
 
         function matchesFilters(node) {
             const level = document.getElementById('level-filter').value;
