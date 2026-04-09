@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IB Biology Systems Web</title>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Applied the modern font globally */
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; background: #f8f9fa; overflow: hidden; }
         
         #nav-bar { padding: 15px 20px; background: #fff; border-bottom: 1px solid #ddd; display: flex; gap: 20px; align-items: center; position: relative; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
@@ -128,7 +126,6 @@
                         id: n.id, label: n.label, tier: n.tier, orgLevel: n.orgLevel, 
                         isHL: n.isHL, description: n.description, hasPathway: n.hasPathway,
                         borderWidth: n.isHL ? 4 : 2,
-                        // REVERTED: HL Border is back to a clean Orange
                         color: { border: n.isHL ? '#e67e22' : '#2c3e50' } 
                     };
 
@@ -136,7 +133,6 @@
                         nodeConfig.shape = 'hexagon';
                         nodeConfig.size = 45;
                         nodeConfig.color.background = '#34495e'; 
-                        // FIXED: Dark navy text that is highly visible below the hexagon
                         nodeConfig.font = { size: 22, color: '#2c3e50', bold: true, strokeWidth: 5, strokeColor: '#ffffff' }; 
                     } else if (n.tier === 2) {
                         nodeConfig.shape = 'box';
@@ -154,32 +150,84 @@
                         nodeConfig.color.background = '#95a5a6'; 
                         nodeConfig.font = { size: 12, color: '#444444', vadjust: 22, strokeWidth: 3, strokeColor: '#ffffff' };
                     }
-                    
                     return nodeConfig;
                 });
                 initNetwork();
                 renderNetwork();
             });
 
+        // Helper function to find immediate neighbors
+        function getNeighbors(id) {
+            let neighborIds = new Set();
+            allEdges.forEach(e => {
+                if (e.from === id) neighborIds.add(e.to);
+                if (e.to === id) neighborIds.add(e.from);
+            });
+            return Array.from(neighborIds).map(nId => allNodes.find(n => n.id === nId)).filter(n => n);
+        }
+
+        // STRICT SPOTLIGHT LOGIC
+        function getVisibleIdsForClick(clickedId) {
+            const clickedNode = allNodes.find(n => n.id === clickedId);
+            if (!clickedNode) return [];
+
+            let visibleSet = new Set([clickedId]);
+            const tier = clickedNode.tier;
+            const neighbors = getNeighbors(clickedId);
+
+            if (tier === 1) {
+                // Rule 1: Show Tier 1 and all Tier 2 related to it
+                neighbors.forEach(n => { if (n.tier === 2) visibleSet.add(n.id); });
+            } 
+            else if (tier === 2) {
+                // Rule 2: Show Parent T1, other T2s of that T1, and its own T3s. NO T4s.
+                let parentT1 = neighbors.find(n => n.tier === 1);
+                if (parentT1) {
+                    visibleSet.add(parentT1.id);
+                    getNeighbors(parentT1.id).forEach(n => { if (n.tier === 2) visibleSet.add(n.id); });
+                }
+                neighbors.forEach(n => { if (n.tier === 3) visibleSet.add(n.id); });
+            } 
+            else if (tier === 3) {
+                // Rule 3: Show Parent T2, its own T4s, and other T3s ONLY if directly connected
+                let parentT2 = neighbors.find(n => n.tier === 2);
+                if (parentT2) visibleSet.add(parentT2.id);
+                
+                neighbors.forEach(n => {
+                    if (n.tier === 4) visibleSet.add(n.id);
+                    if (n.tier === 3) visibleSet.add(n.id);
+                });
+            } 
+            else if (tier === 4) {
+                // Rule 4: Show Parent T3, and other T4s connected to that same T3
+                let parentT3 = neighbors.find(n => n.tier === 3);
+                if (parentT3) {
+                    visibleSet.add(parentT3.id);
+                    getNeighbors(parentT3.id).forEach(n => { if (n.tier === 4) visibleSet.add(n.id); });
+                }
+            }
+
+            return Array.from(visibleSet);
+        }
+
         function initNetwork() {
             const container = document.getElementById('biology-network');
             const options = {
-                // APPLIED: The modern font 'Inter' is now standard across the entire map
                 nodes: { font: { face: "'Inter', sans-serif" } },
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
                 interaction: { zoomSpeed: 0.3, hover: true },
                 physics: {
                     enabled: true,
-                    forceAtlas2Based: { gravitationalConstant: -1000, centralGravity: 0.005, springLength: 200, damping: 0.85, avoidOverlap: 1 },
-                    solver: 'forceAtlas2Based',
-                    stabilization: { enabled: true, iterations: 150 } 
+                    barnesHut: { gravitationalConstant: -3000, centralGravity: 0.1, springLength: 150, damping: 0.8 },
+                    solver: 'barnesHut'
                 }
             };
             
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
+            // RIGID FREEZE: Turns physics completely off once layout settles
             network.on("stabilizationIterationsDone", function () {
-                network.setOptions({ physics: false });
+                network.setOptions({ physics: { enabled: false } });
             });
 
             network.on("click", function (params) {
@@ -208,38 +256,12 @@
                     flowBtn.style.display = 'none';
                 }
 
-                let familyIds = new Set([clickedId]);
-                let hubId = clickedId;
-                if (clickedNode.tier > 2) {
-                    let currentId = clickedId;
-                    for(let i=0; i<3; i++) { 
-                        let edge = allEdges.find(e => e.to === currentId);
-                        if (!edge) break;
-                        let parent = allNodes.find(n => n.id === edge.from);
-                        if (parent && parent.tier === 2) {
-                            hubId = parent.id;
-                            break;
-                        }
-                        if (parent) currentId = parent.id;
-                    }
-                }
-
-                let hubNode = allNodes.find(n => n.id === hubId);
-                if (hubNode && hubNode.tier === 2) {
-                    familyIds.add(hubId);
-                    let addChildren = (parentId) => {
-                        allEdges.filter(e => e.from === parentId).forEach(e => {
-                            familyIds.add(e.to);
-                            addChildren(e.to); 
-                        });
-                    };
-                    addChildren(hubId);
-                }
-
-                const previouslyVisibleCount = nodesDataset.length;
-
-                let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier <= 2 || familyIds.has(n.id)));
-                let styledNodes = viewNodes.map(n => ({...n, opacity: familyIds.has(n.id) ? 1.0 : 0.15}));
+                // APPLY STRICT SPOTLIGHT LOGIC
+                let spotlightIds = getVisibleIdsForClick(clickedId);
+                let viewNodes = allNodes.filter(n => matchesFilters(n) && spotlightIds.includes(n.id));
+                
+                // Dimming logic (clicked node is 1.0, others are 0.3 to maintain focus)
+                let styledNodes = viewNodes.map(n => ({...n, opacity: n.id === clickedId ? 1.0 : 0.3}));
                 
                 let currentIds = nodesDataset.getIds();
                 let newIds = styledNodes.map(n => n.id);
@@ -256,9 +278,9 @@
                 edgesDataset.update(visibleEdges);
                 edgesDataset.remove(edgesToRemove);
 
-                if (styledNodes.length > previouslyVisibleCount) {
-                    network.setOptions({ physics: true }); 
-                }
+                // TURN ON PHYSICS TO PUSH NODES APART, THEN FREEZE
+                network.setOptions({ physics: { enabled: true } });
+                network.stabilize(150);
 
                 network.focus(clickedId, { scale: 1.1, animation: { duration: 800, easingFunction: 'easeInOutQuad' }});
             });
@@ -287,6 +309,7 @@
         function renderNetwork() {
             closePanel();
             
+            // Default reset state: Show Tier 1 and Tier 2
             let baseNodes = allNodes.filter(n => matchesFilters(n) && n.tier <= 2).map(n => ({...n, opacity: 1}));
             
             let currentIds = nodesDataset.getIds();
@@ -304,7 +327,8 @@
             edgesDataset.update(visibleEdges);
             edgesDataset.remove(edgesToRemove);
             
-            network.setOptions({ physics: true });
+            network.setOptions({ physics: { enabled: true } });
+            network.stabilize(150);
         }
 
         function closeFlowchartViewer() {
