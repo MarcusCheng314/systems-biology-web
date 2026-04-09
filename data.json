@@ -3,16 +3,17 @@
     {
       "id": 1,
       "label": "C1.2 Cell Respiration",
-      "description": "Cell respiration is the controlled release of energy from organic compounds to produce ATP. This overarching topic is divided into several major interconnected concepts that occur across different cellular compartments.",
+      "description": "The controlled release of energy from organic compounds to produce ATP. This overarching topic is divided into several major interconnected concepts that occur across different cellular compartments.",
       "tier": 1,
       "orgLevel": "Cells",
       "isHL": false,
-      "hasPathway": false
+      "hasPathway": false,
+      "pathwaySteps": ""
     },
     {
       "id": 2,
       "label": "Glycolysis",
-      "description": "Glycolysis is an anaerobic process occurring in the cytoplasm. It breaks down a 6-carbon glucose molecule into two 3-carbon pyruvate molecules. Net yield is two ATP via substrate-level phosphorylation, along with reduced NAD+ to NADH.",
+      "description": "An anaerobic process occurring in the cytoplasm. It breaks down a 6-carbon glucose molecule into two 3-carbon pyruvate molecules. First, in phosphorylation, hexokinase uses two ATP molecules to add phosphate groups to glucose, making it unstable. During lysis, this hexose bisphosphate splits into two triose phosphate molecules. In the oxidation phase, triose phosphate loses hydrogen, reducing NAD+ to NADH. Finally, enzymes transfer phosphate groups directly to ADP, generating a net yield of two ATP via substrate-level phosphorylation.",
       "tier": 2,
       "orgLevel": "Cells",
       "isHL": false,
@@ -21,51 +22,16 @@
     },
     {
       "id": 3,
-      "label": "Phosphorylation",
-      "description": "First step in glycolysis where hexokinase uses two ATP molecules to add phosphate groups to glucose, making it unstable.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": false,
-      "hasPathway": false
-    },
-    {
-      "id": 4,
-      "label": "Lysis",
-      "description": "During lysis, the hexose bisphosphate molecule (from phosphorylation) splits into two triose phosphate molecules.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": false,
-      "hasPathway": false
-    },
-    {
-      "id": 5,
-      "label": "Oxidation",
-      "description": "In the oxidation phase of glycolysis, triose phosphate loses hydrogen, reducing NAD+ to NADH.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": false,
-      "hasPathway": false
-    },
-    {
-      "id": 6,
-      "label": "ATP Formation",
-      "description": "In the final stage of glycolysis, enzymes transfer phosphate groups directly to ADP, generating a net yield of two ATP via substrate-level phosphorylation.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": false,
-      "hasPathway": false
-    },
-    {
-      "id": 7,
       "label": "The Link Reaction",
-      "description": "If oxygen is present, pyruvate enters the mitochondrial matrix via transport proteins. Here, it undergoes oxidative decarboxylation: pyruvate loses a carbon atom as carbon dioxide and is simultaneously oxidized (reducing NAD+ to NADH). The remaining 2-carbon acetyl group binds to Coenzyme A, forming Acetyl CoA.",
+      "description": "If oxygen is present, pyruvate enters the mitochondrial matrix via transport proteins. Here, it undergoes oxidative decarboxylation. Pyruvate loses a carbon atom as carbon dioxide and is simultaneously oxidized, reducing NAD+ to NADH. The remaining 2-carbon acetyl group binds to Coenzyme A, forming Acetyl CoA.",
       "tier": 2,
       "orgLevel": "Cells",
       "isHL": false,
-      "hasPathway": false
+      "hasPathway": true,
+      "pathwaySteps": "Pyruvate enters mitochondrial matrix -> Oxidative Decarboxylation -> Acetyl group binds to Coenzyme A"
     },
     {
-      "id": 8,
+      "id": 4,
       "label": "The Krebs Cycle",
       "description": "Located in the mitochondrial matrix, the Krebs Cycle is a cyclical mechanism of oxidation. Throughout this cycle, decarboxylase enzymes remove carbon dioxide, while dehydrogenase enzymes reduce both NAD+ and FAD into NADH and FADH2. A small amount of ATP is also produced via substrate-level phosphorylation.",
       "tier": 2,
@@ -75,134 +41,46 @@
       "pathwaySteps": "Acetyl CoA delivers acetyl group -> Binds with 4C Oxaloacetate -> Forms 6C Citrate -> Oxidative Decarboxylation to 5C -> Oxidative Decarboxylation to 4C -> Regeneration of Oxaloacetate"
     },
     {
-      "id": 9,
-      "label": "Oxidative Decarboxylation to 5C",
-      "description": "A step within the Krebs Cycle where the 6C Citrate molecule undergoes oxidative decarboxylation, losing carbon dioxide and being oxidized, forming a 5C compound.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 10,
-      "label": "Oxidative Decarboxylation to 4C",
-      "description": "A step within the Krebs Cycle where the 5C compound undergoes further oxidative decarboxylation, losing carbon dioxide and being oxidized, forming a 4C compound.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 11,
-      "label": "Regeneration of Oxaloacetate",
-      "description": "The final steps of the Krebs Cycle where the 4C compound is further processed and oxidized to regenerate the starting 4C Oxaloacetate molecule, completing the cycle and producing more NADH and FADH2.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 12,
+      "id": 5,
       "label": "The Electron Transport Chain",
-      "description": "The ETC is a series of trans-membrane protein complexes embedded in the inner mitochondrial membrane (cristae). NADH and FADH2 deliver high-energy electrons to these complexes. At the end of the chain, molecular oxygen acts as the final electron acceptor, binding with electrons and free protons to form water, preventing the chain from backing up.",
+      "description": "A series of trans-membrane protein complexes embedded in the inner mitochondrial membrane (cristae). NADH and FADH2 deliver high-energy electrons to these complexes. As electrons are passed down the chain, they lose energy. This energy drives proton pumping, moving hydrogen ions from the matrix into the narrow intermembrane space, building a massive concentration gradient. At the end of the chain, molecular oxygen acts as the final electron acceptor, binding with electrons and free protons to form water, preventing the chain from backing up.",
       "tier": 2,
       "orgLevel": "Cells",
       "isHL": true,
-      "hasPathway": false
+      "hasPathway": true,
+      "pathwaySteps": "Electrons delivered by NADH/FADH2 -> Electrons passed down chain -> Energy used for proton pumping -> Proton gradient built -> Oxygen accepts electrons + protons -> Water formed"
     },
     {
-      "id": 13,
-      "label": "Proton Pumping",
-      "description": "As electrons are passed down the electron transport chain, they lose energy. This energy drives the active transport of hydrogen ions (protons) from the mitochondrial matrix into the narrow intermembrane space, building a massive concentration gradient.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 14,
+      "id": 6,
       "label": "Chemiosmosis",
-      "description": "Chemiosmosis is the mechanism that couples the proton gradient to ATP synthesis. Because the inner membrane is impermeable to protons, they must diffuse back into the matrix through a specialized enzyme called ATP Synthase.",
+      "description": "The mechanism that couples the proton gradient to ATP synthesis. Because the inner membrane is impermeable to protons, they must diffuse back into the matrix through a specialized enzyme called ATP Synthase. The process leads to massive ATP production.",
       "tier": 2,
       "orgLevel": "Cells",
       "isHL": true,
       "hasPathway": true,
       "pathwaySteps": "Proton Motive Force builds -> Protons flow through ATP Synthase -> Rotor subunit turns -> Conformational change in catalytic knob -> ADP binds with inorganic phosphate -> Massive ATP production"
-    },
-    {
-      "id": 15,
-      "label": "Proton Motive Force build-up",
-      "description": "The accumulation of protons in the intermembrane space due to proton pumping by the ETC creates an electrochemical gradient, known as the proton motive force.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 16,
-      "label": "Protons flow through ATP Synthase",
-      "description": "Due to the proton motive force, protons diffuse back into the mitochondrial matrix through the channels provided by the ATP Synthase enzyme.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 17,
-      "label": "Rotor subunit turns",
-      "description": "The flow of protons through ATP Synthase causes a rotor subunit within the enzyme to turn.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 18,
-      "label": "Conformational change in catalytic knob",
-      "description": "The rotation of the rotor subunit induces a conformational change in the catalytic knob (F1 subunit) of ATP Synthase.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 19,
-      "label": "ADP binds with inorganic phosphate",
-      "description": "The conformational change in the catalytic knob facilitates the binding of ADP with inorganic phosphate.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
-    },
-    {
-      "id": 20,
-      "label": "Massive ATP production",
-      "description": "The binding of ADP and inorganic phosphate is followed by their condensation to form ATP, representing the massive production of ATP through chemiosmosis.",
-      "tier": 3,
-      "orgLevel": "Cells",
-      "isHL": true,
-      "hasPathway": false
     }
   ],
   "edges": [
-    { "from": 1, "to": 2 },
-    { "from": 1, "to": 7 },
-    { "from": 1, "to": 8 },
-    { "from": 1, "to": 12 },
-    { "from": 1, "to": 14 },
-    { "from": 2, "to": 3 },
-    { "from": 2, "to": 4 },
-    { "from": 2, "to": 5 },
-    { "from": 2, "to": 6 },
-    { "from": 8, "to": 9 },
-    { "from": 8, "to": 10 },
-    { "from": 8, "to": 11 },
-    { "from": 12, "to": 13 },
-    { "from": 14, "to": 15 },
-    { "from": 14, "to": 16 },
-    { "from": 14, "to": 17 },
-    { "from": 14, "to": 18 },
-    { "from": 14, "to": 19 },
-    { "from": 14, "to": 20 }
+    {
+      "from": 1,
+      "to": 2
+    },
+    {
+      "from": 1,
+      "to": 3
+    },
+    {
+      "from": 1,
+      "to": 4
+    },
+    {
+      "from": 1,
+      "to": 5
+    },
+    {
+      "from": 1,
+      "to": 6
+    }
   ]
 }
