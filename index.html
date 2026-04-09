@@ -100,6 +100,7 @@
         let nodesDataset = new vis.DataSet();
         let edgesDataset = new vis.DataSet();
 
+        // Dropdown Toggle Logic
         function toggleDropdown() {
             document.getElementById("layer-dropdown").classList.toggle("show");
         }
@@ -117,17 +118,38 @@
             .then(data => {
                 allEdges = data.edges;
                 allNodes = data.nodes.map(n => {
-                    let size = 10;
-                    let color = '#bdc3c7';
+                    let nodeConfig = {
+                        id: n.id, label: n.label, tier: n.tier, orgLevel: n.orgLevel, 
+                        isHL: n.isHL, description: n.description, hasPathway: n.hasPathway,
+                        borderWidth: n.isHL ? 4 : 2,
+                        color: { border: n.isHL ? '#e74c3c' : '#2c3e50' } // Red border for HL
+                    };
+
+                    // VISUAL SHAPE HIERARCHY
+                    if (n.tier === 1) {
+                        nodeConfig.shape = 'hexagon';
+                        nodeConfig.size = 40;
+                        nodeConfig.color.background = '#34495e'; // Dark Navy
+                        nodeConfig.font = { size: 20, color: '#ffffff', bold: true }; 
+                    } else if (n.tier === 2) {
+                        nodeConfig.shape = 'box';
+                        nodeConfig.margin = 12;
+                        nodeConfig.color.background = '#2ecc71'; // Vibrant Green
+                        nodeConfig.font = { size: 16, color: '#ffffff', bold: true };
+                    } else if (n.tier === 3) {
+                        nodeConfig.shape = 'dot';
+                        nodeConfig.size = 22;
+                        nodeConfig.color.background = '#3498db'; // Bright Blue
+                        nodeConfig.font = { size: 14, color: '#333333', vadjust: 32, strokeWidth: 4, strokeColor: '#ffffff' };
+                    } else {
+                        // Tier 4
+                        nodeConfig.shape = 'dot';
+                        nodeConfig.size = 12;
+                        nodeConfig.color.background = '#95a5a6'; // Subordinate Gray
+                        nodeConfig.font = { size: 12, color: '#555555', vadjust: 20, strokeWidth: 3, strokeColor: '#ffffff' };
+                    }
                     
-                    if (n.tier === 1) { size = 48; color = '#3498db'; }
-                    else if (n.tier === 2) { size = 32; color = '#2ecc71'; }
-                    else if (n.tier === 3) { size = 20; color = '#9b59b6'; } 
-                    else if (n.tier === 4) { size = 12; color = '#95a5a6'; } 
-                    
-                    if (n.isHL) color = '#e67e22'; 
-                    
-                    return { ...n, size: size, color: { background: color, border: '#2c3e50' }, font: { size: Math.max(14, size/1.2), vadjust: size + 15, strokeWidth: 5, strokeColor: '#ffffff' } };
+                    return nodeConfig;
                 });
                 initNetwork();
                 renderNetwork();
@@ -136,16 +158,15 @@
         function initNetwork() {
             const container = document.getElementById('biology-network');
             const options = {
-                nodes: { shape: 'dot', borderWidth: 2 },
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
                 interaction: { zoomSpeed: 0.3, hover: true },
                 physics: {
                     enabled: true,
                     forceAtlas2Based: { 
-                        gravitationalConstant: -1000, 
+                        gravitationalConstant: -1000, // Keeps nodes far apart
                         centralGravity: 0.005, 
                         springLength: 200, 
-                        damping: 0.85, 
+                        damping: 0.85, // Stops the wiggle
                         avoidOverlap: 1 
                     },
                     solver: 'forceAtlas2Based',
@@ -155,8 +176,13 @@
             
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
+            // Freeze physics after layout
+            network.on("stabilizationIterationsDone", function () {
+                network.setOptions({ physics: false });
+            });
+
             network.on("click", function (params) {
-                if (params.nodes.length === 0) return; 
+                if (params.nodes.length === 0) return; // Allow free dragging on empty space
 
                 const clickedId = params.nodes[0];
                 const clickedNode = allNodes.find(n => n.id === clickedId);
@@ -181,18 +207,44 @@
                     flowBtn.style.display = 'none';
                 }
 
-                let connectedIds = [];
-                allEdges.forEach(e => {
-                    if (e.from === clickedId) connectedIds.push(e.to);
-                    if (e.to === clickedId) connectedIds.push(e.from);
-                });
-                connectedIds.push(clickedId);
+                // HUB-AND-SPOKE FAMILY LOGIC
+                let familyIds = new Set([clickedId]);
+                
+                // 1. Trace up to find the Tier 2 Parent (The Hub)
+                let hubId = clickedId;
+                if (clickedNode.tier > 2) {
+                    let currentId = clickedId;
+                    for(let i=0; i<3; i++) { 
+                        let edge = allEdges.find(e => e.to === currentId);
+                        if (!edge) break;
+                        let parent = allNodes.find(n => n.id === edge.from);
+                        if (parent && parent.tier === 2) {
+                            hubId = parent.id;
+                            break;
+                        }
+                        if (parent) currentId = parent.id;
+                    }
+                }
+
+                // 2. Add the Hub and ALL its children to the visible family
+                let hubNode = allNodes.find(n => n.id === hubId);
+                if (hubNode && hubNode.tier === 2) {
+                    familyIds.add(hubId);
+                    let addChildren = (parentId) => {
+                        allEdges.filter(e => e.from === parentId).forEach(e => {
+                            familyIds.add(e.to);
+                            addChildren(e.to); 
+                        });
+                    };
+                    addChildren(hubId);
+                }
 
                 const previouslyVisibleCount = nodesDataset.length;
 
-                let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier <= 2 || connectedIds.includes(n.id)));
-                let styledNodes = viewNodes.map(n => ({...n, opacity: connectedIds.includes(n.id) ? 1.0 : 0.15}));
+                let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier <= 2 || familyIds.has(n.id)));
+                let styledNodes = viewNodes.map(n => ({...n, opacity: familyIds.has(n.id) ? 1.0 : 0.15}));
                 
+                // Safe update to prevent clumping
                 let currentIds = nodesDataset.getIds();
                 let newIds = styledNodes.map(n => n.id);
                 let idsToRemove = currentIds.filter(id => !newIds.includes(id));
@@ -209,12 +261,10 @@
                 edgesDataset.remove(edgesToRemove);
 
                 if (styledNodes.length > previouslyVisibleCount) {
-                    network.setOptions({ physics: true });
-                } else {
-                    network.setOptions({ physics: false });
+                    network.setOptions({ physics: true }); // Only turn on physics if new nodes sprout
                 }
 
-                // Smooth pan and gentle focus without extreme scaling
+                // Gentle Pan and Zoom
                 network.focus(clickedId, { scale: 1.1, animation: { duration: 800, easingFunction: 'easeInOutQuad' }});
             });
         }
