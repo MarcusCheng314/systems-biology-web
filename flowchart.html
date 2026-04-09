@@ -4,22 +4,21 @@
     <meta charset="UTF-8">
     <title>Pathway Flowchart</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px 40px; margin: 0; background: #fff; }
+        body { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px 40px; margin: 0; background: #fff; }
         #title { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #2ecc71; padding-bottom: 10px; width: 100%; text-align: center; }
         #graph-container { width: 100%; display: flex; justify-content: center; margin-top: 20px;}
-        #error-msg { color: #e74c3c; background: #fadbd8; padding: 15px; border-radius: 8px; display: none; margin-top: 20px;}
+        #error-msg { color: #e74c3c; background: #fadbd8; padding: 15px; border-radius: 8px; display: none; margin-top: 20px; font-size: 14px;}
     </style>
 </head>
 <body>
     <h1 id="title">Pathway Analysis</h1>
     <div id="error-msg"></div>
-    <div id="graph-container" class="mermaid">
-        %% The flowchart will be injected here
-    </div>
+    <div id="graph-container" class="mermaid"></div>
 
     <script>
-        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: 'neutral' });
+        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: 'neutral', fontFamily: 'Inter' });
 
         async function renderDynamicFlowchart() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -36,19 +35,17 @@
 
                 if (matchedNode && matchedNode.pathwaySteps) {
                     
-                    // FIX 3: Safe Parsing. We break the string apart and wrap each step in quotes 
-                    // so Mermaid doesn't crash on spaces or + symbols.
-                    const steps = matchedNode.pathwaySteps.split(' -> ');
+                    // FIX: Safe regex split handles " -> ", "->", and strips quotes to prevent Mermaid Lexer crashes
+                    const steps = matchedNode.pathwaySteps.split(/\s*->\s*/);
                     let mermaidDefinition = "graph TD\n";
                     
                     for (let i = 0; i < steps.length - 1; i++) {
-                        // Creates format: node1["Text"] --> node2["Text"]
-                        mermaidDefinition += `    step${i}["${steps[i]}"] --> step${i+1}["${steps[i+1]}"]\n`;
+                        let safe1 = steps[i].replace(/"/g, "'").trim();
+                        let safe2 = steps[i+1].replace(/"/g, "'").trim();
+                        mermaidDefinition += `    step${i}["${safe1}"] --> step${i+1}["${safe2}"]\n`;
                     }
                     
                     container.innerHTML = mermaidDefinition;
-                    
-                    // Tell mermaid to render our newly injected code
                     container.removeAttribute('data-processed');
                     await mermaid.run({ nodes: [container] }); 
                 } else {
