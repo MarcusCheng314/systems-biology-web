@@ -5,22 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IB Biology Systems Web</title>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; background: #f8f9fa; overflow: hidden; }
+        /* Applied the modern font globally */
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; background: #f8f9fa; overflow: hidden; }
         
-        #nav-bar { padding: 15px 20px; background: #fff; border-bottom: 1px solid #ddd; display: flex; gap: 20px; align-items: center; position: relative; z-index: 100; }
-        select { padding: 8px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; }
+        #nav-bar { padding: 15px 20px; background: #fff; border-bottom: 1px solid #ddd; display: flex; gap: 20px; align-items: center; position: relative; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        select { padding: 8px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; font-family: 'Inter', sans-serif; }
         
-        /* Fixed Clickable Dropdown Menu */
         .dropdown { position: relative; display: inline-block; }
-        .dropdown-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; color: #2c3e50; transition: background 0.2s; }
+        .dropdown-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: 600; color: #2c3e50; transition: background 0.2s; }
         .dropdown-btn:hover { background: #f1f2f6; }
-        .dropdown-content { display: none; position: absolute; background: #fff; box-shadow: 0px 8px 16px rgba(0,0,0,0.15); padding: 15px; z-index: 101; border-radius: 8px; min-width: 190px; margin-top: 5px; border: 1px solid #eee; }
+        .dropdown-content { display: none; position: absolute; background: #fff; box-shadow: 0px 8px 20px rgba(0,0,0,0.1); padding: 15px; z-index: 101; border-radius: 8px; min-width: 190px; margin-top: 5px; border: 1px solid #eee; }
         .dropdown-content.show { display: block; }
-        .dropdown-content label { display: flex; align-items: center; margin-bottom: 12px; font-size: 14px; cursor: pointer; color: #34495e;}
+        .dropdown-content label { display: flex; align-items: center; margin-bottom: 12px; font-size: 14px; cursor: pointer; color: #34495e; font-weight: 400;}
         .dropdown-content input { margin-right: 10px; cursor: pointer; width: 16px; height: 16px; }
         
-        .toggle-container { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #d35400; margin-left: auto;}
+        .toggle-container { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #e67e22; margin-left: auto;}
         
         #main-content-wrapper { display: flex; width: 100vw; height: calc(100vh - 60px); transition: all 0.5s ease; }
         #biology-network-container { flex: 1 1 100%; position: relative; transition: flex 0.5s ease; overflow: hidden; }
@@ -35,15 +40,17 @@
         #info-panel {
             position: absolute; top: 20px; right: -400px; width: 320px;
             background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
-            padding: 25px; border-radius: 12px; box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            padding: 25px; border-radius: 12px; box-shadow: -4px 0 24px rgba(0,0,0,0.12);
             transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 80vh; overflow-y: auto; z-index: 10;
         }
         #info-panel.active { right: 20px; }
-        #info-title { margin-top: 5px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; font-size: 1.2rem; }
+        #info-title { margin-top: 5px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; font-size: 1.25rem; font-weight: 700; }
+        #info-desc { font-size: 14px; line-height: 1.6; color: #444; }
+        
         .close-btn { position: absolute; top: 12px; right: 15px; cursor: pointer; color: #bdc3c7; font-size: 22px; transition: color 0.2s; }
         .close-btn:hover { color: #e74c3c; }
         
-        #flowchart-btn { display: none; margin-top: 20px; padding: 12px; width: 100%; background: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        #flowchart-btn { display: none; margin-top: 20px; padding: 12px; width: 100%; background: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.2s; font-family: 'Inter', sans-serif;}
         #flowchart-btn:hover { background: #27ae60; }
     </style>
 </head>
@@ -69,7 +76,7 @@
             </div>
         </div>
 
-        <button onclick="resetFocus()" style="padding: 8px 12px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: #fff;">Reset Map</button>
+        <button onclick="resetFocus()" style="padding: 8px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #ccc; background: #fff; font-family: 'Inter', sans-serif; font-weight: 600; color: #2c3e50;">Reset Map</button>
         
         <div class="toggle-container">
             <input type="checkbox" id="hl-toggle" onchange="renderNetwork()" checked>
@@ -100,7 +107,6 @@
         let nodesDataset = new vis.DataSet();
         let edgesDataset = new vis.DataSet();
 
-        // Dropdown Toggle Logic
         function toggleDropdown() {
             document.getElementById("layer-dropdown").classList.toggle("show");
         }
@@ -122,31 +128,31 @@
                         id: n.id, label: n.label, tier: n.tier, orgLevel: n.orgLevel, 
                         isHL: n.isHL, description: n.description, hasPathway: n.hasPathway,
                         borderWidth: n.isHL ? 4 : 2,
-                        color: { border: n.isHL ? '#e74c3c' : '#2c3e50' } // Red border for HL
+                        // REVERTED: HL Border is back to a clean Orange
+                        color: { border: n.isHL ? '#e67e22' : '#2c3e50' } 
                     };
 
-                    // VISUAL SHAPE HIERARCHY
                     if (n.tier === 1) {
                         nodeConfig.shape = 'hexagon';
-                        nodeConfig.size = 40;
-                        nodeConfig.color.background = '#34495e'; // Dark Navy
-                        nodeConfig.font = { size: 20, color: '#ffffff', bold: true }; 
+                        nodeConfig.size = 45;
+                        nodeConfig.color.background = '#34495e'; 
+                        // FIXED: Dark navy text that is highly visible below the hexagon
+                        nodeConfig.font = { size: 22, color: '#2c3e50', bold: true, strokeWidth: 5, strokeColor: '#ffffff' }; 
                     } else if (n.tier === 2) {
                         nodeConfig.shape = 'box';
-                        nodeConfig.margin = 12;
-                        nodeConfig.color.background = '#2ecc71'; // Vibrant Green
+                        nodeConfig.margin = 14;
+                        nodeConfig.color.background = '#2ecc71'; 
                         nodeConfig.font = { size: 16, color: '#ffffff', bold: true };
                     } else if (n.tier === 3) {
                         nodeConfig.shape = 'dot';
                         nodeConfig.size = 22;
-                        nodeConfig.color.background = '#3498db'; // Bright Blue
-                        nodeConfig.font = { size: 14, color: '#333333', vadjust: 32, strokeWidth: 4, strokeColor: '#ffffff' };
+                        nodeConfig.color.background = '#3498db'; 
+                        nodeConfig.font = { size: 14, color: '#2c3e50', vadjust: 32, strokeWidth: 4, strokeColor: '#ffffff' };
                     } else {
-                        // Tier 4
                         nodeConfig.shape = 'dot';
                         nodeConfig.size = 12;
-                        nodeConfig.color.background = '#95a5a6'; // Subordinate Gray
-                        nodeConfig.font = { size: 12, color: '#555555', vadjust: 20, strokeWidth: 3, strokeColor: '#ffffff' };
+                        nodeConfig.color.background = '#95a5a6'; 
+                        nodeConfig.font = { size: 12, color: '#444444', vadjust: 22, strokeWidth: 3, strokeColor: '#ffffff' };
                     }
                     
                     return nodeConfig;
@@ -158,17 +164,13 @@
         function initNetwork() {
             const container = document.getElementById('biology-network');
             const options = {
+                // APPLIED: The modern font 'Inter' is now standard across the entire map
+                nodes: { font: { face: "'Inter', sans-serif" } },
                 edges: { arrows: 'to', color: '#bdc3c7', smooth: { type: 'continuous' } },
                 interaction: { zoomSpeed: 0.3, hover: true },
                 physics: {
                     enabled: true,
-                    forceAtlas2Based: { 
-                        gravitationalConstant: -1000, // Keeps nodes far apart
-                        centralGravity: 0.005, 
-                        springLength: 200, 
-                        damping: 0.85, // Stops the wiggle
-                        avoidOverlap: 1 
-                    },
+                    forceAtlas2Based: { gravitationalConstant: -1000, centralGravity: 0.005, springLength: 200, damping: 0.85, avoidOverlap: 1 },
                     solver: 'forceAtlas2Based',
                     stabilization: { enabled: true, iterations: 150 } 
                 }
@@ -176,13 +178,12 @@
             
             network = new vis.Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
-            // Freeze physics after layout
             network.on("stabilizationIterationsDone", function () {
                 network.setOptions({ physics: false });
             });
 
             network.on("click", function (params) {
-                if (params.nodes.length === 0) return; // Allow free dragging on empty space
+                if (params.nodes.length === 0) return; 
 
                 const clickedId = params.nodes[0];
                 const clickedNode = allNodes.find(n => n.id === clickedId);
@@ -207,10 +208,7 @@
                     flowBtn.style.display = 'none';
                 }
 
-                // HUB-AND-SPOKE FAMILY LOGIC
                 let familyIds = new Set([clickedId]);
-                
-                // 1. Trace up to find the Tier 2 Parent (The Hub)
                 let hubId = clickedId;
                 if (clickedNode.tier > 2) {
                     let currentId = clickedId;
@@ -226,7 +224,6 @@
                     }
                 }
 
-                // 2. Add the Hub and ALL its children to the visible family
                 let hubNode = allNodes.find(n => n.id === hubId);
                 if (hubNode && hubNode.tier === 2) {
                     familyIds.add(hubId);
@@ -244,7 +241,6 @@
                 let viewNodes = allNodes.filter(n => matchesFilters(n) && (n.tier <= 2 || familyIds.has(n.id)));
                 let styledNodes = viewNodes.map(n => ({...n, opacity: familyIds.has(n.id) ? 1.0 : 0.15}));
                 
-                // Safe update to prevent clumping
                 let currentIds = nodesDataset.getIds();
                 let newIds = styledNodes.map(n => n.id);
                 let idsToRemove = currentIds.filter(id => !newIds.includes(id));
@@ -261,10 +257,9 @@
                 edgesDataset.remove(edgesToRemove);
 
                 if (styledNodes.length > previouslyVisibleCount) {
-                    network.setOptions({ physics: true }); // Only turn on physics if new nodes sprout
+                    network.setOptions({ physics: true }); 
                 }
 
-                // Gentle Pan and Zoom
                 network.focus(clickedId, { scale: 1.1, animation: { duration: 800, easingFunction: 'easeInOutQuad' }});
             });
         }
